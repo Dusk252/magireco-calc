@@ -1,0 +1,86 @@
+{
+    "name": "magireco-dmg-calc",
+    "version": "1.0.0",
+    "description": "A MagiReco damage calculator.",
+    "main": "index.js",
+    "scripts": {
+        "start": "webpack-dev-server",
+        "build": "webpack",
+        "test": "jest"
+    },
+    "author": "Dusk252",
+    "license": "ISC",
+    "devDependencies": {
+        "@babel/core": "^7.10.4",
+        "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
+        "@babel/preset-env": "^7.10.4",
+        "@babel/preset-react": "^7.10.4",
+        "babel-core": "^6.26.3",
+        "babel-eslint": "^10.1.0",
+        "babel-loader": "^8.1.0",
+        "css-loader": "^4.2.0",
+        "eslint": "^7.4.0",
+        "eslint-loader": "^4.0.2",
+        "eslint-plugin-import": "^2.22.0",
+        "eslint-plugin-react": "^7.20.3",
+        "eslint-plugin-react-hooks": "0.0.0-f77c7b9d7",
+        "jest": "^26.1.0",
+        "json-loader": "^0.5.7",
+        "redux-immutable-state-invariant": "^2.1.0",
+        "style-loader": "^1.2.1",
+        "webpack": "^4.43.0",
+        "webpack-cli": "^3.3.12",
+        "webpack-dev-server": "^3.11.0"
+    },
+    "dependencies": {
+        "@material-ui/core": "4.11.0",
+        "html-webpack-plugin": "^4.3.0",
+        "prop-types": "^15.7.2",
+        "react": "^16.13.1",
+        "react-dom": "^16.13.1",
+        "react-hook-form": "latest",
+        "react-redux": "^7.2.1",
+        "react-router-dom": "^5.2.0",
+        "redux": "^4.0.5"
+    },
+    "eslintConfig": {
+        "extends": [
+            "eslint:recommended",
+            "plugin:react/recommended",
+            "plugin:import/errors",
+            "plugin:import/warnings"
+        ],
+        "plugins": [
+            "react-hooks"
+        ],
+        "parser": "babel-eslint",
+        "parserOptions": {
+            "ecmaVersion": 2018,
+            "sourceType": "module",
+            "ecmaFeatures": {
+                "jsx": true
+            }
+        },
+        "env": {
+            "browser": true,
+            "node": true,
+            "es6": true,
+            "jest": true
+        },
+        "rules": {
+            "no-debugger": "off",
+            "no-console": "off",
+            "no-unused-vars": "warn",
+            "react/prop-types": "warn",
+            "react-hooks/rules-of-hooks": "error",
+            "react-hooks/exhaustive-deps": "warn",
+            "react/jsx-uses-react": "warn"
+        },
+        "settings": {
+            "react": {
+                "version": "detect"
+            }
+        },
+        "root": true
+    }
+}
