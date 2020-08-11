@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route, Link, Redirect } from 'react-router-dom';
-import DamageCalcPage from './DamageCalcPage';
+import DmgCalcPage from './DmgCalcPage';
 import MpCalcPage from './MpCalcPage';
 import { ThemeProvider, createMuiTheme, CssBaseline, AppBar, makeStyles } from '@material-ui/core';
 
@@ -85,7 +85,7 @@ const App = () => {
                             <Redirect to='/dmg' />
                         </Route>
                         <Route exact path='/dmg'>
-                            <DamageCalcPage />
+                            <DmgCalcPage />
                         </Route>
                         <Route exact path='/mp'>
                             <MpCalcPage />
