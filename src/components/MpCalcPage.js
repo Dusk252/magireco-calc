@@ -10,15 +10,7 @@ import MpCalcTab from './MpCalcTab';
 
 let renderCount = 0;
 
-const useStyles = makeStyles(() => ({
-    flexContainer: {
-        flexWrap: 'wrap'
-    }
-}));
-
 const MpCalcPage = ({ updateFormTab, addFormTab, removeFormTab, formTabsState }) => {
-    const classes = useStyles();
-
     const [currentTab, setCurrentTab] = useState(0);
     const [removingTab, setRemovingTab] = useState(false);
 
@@ -63,7 +55,14 @@ const MpCalcPage = ({ updateFormTab, addFormTab, removeFormTab, formTabsState })
                 Render Count: {renderCount}
             </span>
             <AppBar position='static'>
-                <Tabs value={currentTab} classes={classes} onChange={handleChange} aria-label='mp tabs'>
+                <Tabs
+                    value={currentTab}
+                    onChange={handleChange}
+                    aria-label='mp tabs'
+                    indicatorColor='secondary'
+                    variant='scrollable'
+                    scrollButtons='auto'
+                >
                     {formTabsState.map((tab, index) => {
                         return <TabItem label={tab.title} index={index} key={index} handleRemove={handleRemove} />;
                     })}
