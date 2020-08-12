@@ -1,7 +1,7 @@
 import React from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
-import * as damageCalcs from '../utils/damageCalcs';
-import * as memoriaCalcs from '../utils/memoriaCalcs';
+import * as damageCalcs from '../../../utils/damageCalcs';
+import * as memoriaCalcs from '../../../utils/memoriaCalcs';
 import ReactDOM from 'react-dom';
 
 //import './../styles.css';

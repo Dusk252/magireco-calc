@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route, Link, Redirect } from 'react-router-dom';
-import DmgCalcPage from './DmgCalcPage';
-import MpCalcPage from './MpCalcPage';
+import DmgCalcPage from './pages/dmg/DmgCalcPage';
+import MpCalcPage from './pages/mp/MpCalcPage';
 import { ThemeProvider, createMuiTheme, CssBaseline, AppBar, makeStyles } from '@material-ui/core';
 
 const theme = createMuiTheme({

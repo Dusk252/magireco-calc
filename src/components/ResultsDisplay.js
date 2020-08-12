@@ -35,7 +35,7 @@ const ResultsDisplay = ({ interimResults, finalResult }) => {
                                 </Grid>
                                 <Grid item xs={6}>
                                     <Typography variant='body1' component='div' align='right'>
-                                        {Math.round(res.res.value)}
+                                        {round(res.res.value, 1)}
                                         {res.res.postfix}
                                     </Typography>
                                 </Grid>

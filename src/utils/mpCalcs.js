@@ -1,4 +1,6 @@
-export const CMPTable = {
+import { INITIAL_VALUES as initialValues, CHAR_TYPES_MP_MOD as charTypesMpMod } from '../constants/mpConst';
+
+const CMPTable = {
     0: 1,
     1: 1.3,
     2: 1.6,
@@ -20,33 +22,6 @@ export const CMPTable = {
     18: 7.0,
     19: 7.5,
     20: 8.0
-};
-
-export const initialValues = {
-    accel: {
-        1: 10,
-        2: 10.5,
-        3: 14
-    },
-    blast: {
-        1: 0,
-        2: 0,
-        3: 0
-    },
-    charge: {
-        1: 2,
-        2: 3,
-        3: 4
-    }
-};
-
-export const charTypesMpMod = {
-    magia: 1.2,
-    support: 1.2,
-    attack: 1,
-    heal: 1,
-    balance: 0.9,
-    defense: 0.8
 };
 
 export const mpCalc = (accelCombo, discSlot, discType, charType, mpUp, accelMpUp, chargeCount) => {

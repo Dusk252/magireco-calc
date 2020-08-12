@@ -23,5 +23,6 @@ export const ROMAN_NUMERALS = {
 
 export const VALIDATION_MESSAGES = {
     required: 'Please fill in the field.',
-    number: 'The input has to be a number.'
+    isNumber: 'The input has to be a number.',
+    isInteger: 'The input has to be an integer.'
 };
