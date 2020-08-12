@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { updateDmgFormTab, addDmgFormTab, removeDmgFormTab } from '../redux/actions/dmgFormActions';
-import { makeStyles, Tabs, AppBar } from '@material-ui/core';
+import { Tabs, AppBar } from '@material-ui/core';
 import TabItem from './TabItem';
 import TabPanel from './TabPanel';
 import TabAddDialog from './TabAddDialog';
@@ -58,7 +58,7 @@ const DmgCalcPage = ({ updateFormTab, addFormTab, removeFormTab, formTabsState }
                 <Tabs
                     value={currentTab}
                     onChange={handleChange}
-                    aria-label='mp tabs'
+                    aria-label='dmg tabs'
                     indicatorColor='secondary'
                     variant='scrollable'
                     scrollButtons='auto'
@@ -72,7 +72,7 @@ const DmgCalcPage = ({ updateFormTab, addFormTab, removeFormTab, formTabsState }
             {!removingTab &&
                 formTabsState.map((tab, index) => {
                     return (
-                        <TabPanel value={currentTab} index={index} key={index} style={{ paddingTop: '48px' }}>
+                        <TabPanel value={currentTab} index={index} key={index}>
                             <DmgCalcTab index={index} tabInfo={formTabsState[index]} onFormChange={handleFormChanges} />
                         </TabPanel>
                     );

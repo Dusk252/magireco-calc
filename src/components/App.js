@@ -56,7 +56,7 @@ const theme = createMuiTheme({
     }
 });
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     root: {
         justifyContent: 'flex-end'
     }

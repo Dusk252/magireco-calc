@@ -51,8 +51,7 @@ export const charTypesMpMod = {
 
 export const mpCalc = (accelCombo, discSlot, discType, charType, mpUp, accelMpUp, chargeCount) => {
     return (
-        (initialValues[discType][discSlot] +
-            ((accelCombo && discSlot != 1) || (discSlot == 1 && discType == 'accel') ? 3 : 0)) *
+        (initialValues[discType][discSlot] + (accelCombo && discSlot != 1 ? 3 : 0)) *
         charTypesMpMod[charType] *
         (1 + mpUp) *
         (1 + accelMpUp) *

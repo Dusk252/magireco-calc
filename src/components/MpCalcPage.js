@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { updateMpFormTab, addMpFormTab, removeMpFormTab } from './../redux/actions/mpFormActions';
-import { makeStyles, Tabs, AppBar } from '@material-ui/core';
+import { Tabs, AppBar } from '@material-ui/core';
 import TabItem from './TabItem';
 import TabPanel from './TabPanel';
 import TabAddDialog from './TabAddDialog';
@@ -30,9 +30,7 @@ const MpCalcPage = ({ updateFormTab, addFormTab, removeFormTab, formTabsState })
         removeFormTab(index);
         setCurrentTab((currentTab) => {
             return currentTab === index
-                ? index === 0
-                    ? index + 1
-                    : index === formTabsState.length - 1
+                ? index === formTabsState.length - 1
                     ? index - 1
                     : index
                 : currentTab < index
@@ -72,7 +70,7 @@ const MpCalcPage = ({ updateFormTab, addFormTab, removeFormTab, formTabsState })
             {!removingTab &&
                 formTabsState.map((tab, index) => {
                     return (
-                        <TabPanel value={currentTab} index={index} key={index} style={{ paddingTop: '48px' }}>
+                        <TabPanel value={currentTab} index={index} key={index}>
                             <MpCalcTab index={index} tabInfo={formTabsState[index]} onFormChange={handleFormChanges} />
                         </TabPanel>
                     );

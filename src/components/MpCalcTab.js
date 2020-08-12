@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useForm, useFieldArray, FormProvider } from 'react-hook-form';
 import PropTypes from 'prop-types';
-import { Container, Button } from '@material-ui/core';
+import { Container, Button, makeStyles } from '@material-ui/core';
 import FormField from './FormField';
 import { mpUp as mpUpCalc, accelMpUp as accelMpUpCalc } from './../utils/memoriaCalcs';
 import { mpCalc } from './../utils/mpCalcs';
 import * as constants from './../utils/const';
+import ResultsDisplay from './ResultsDisplay';
 
 const MpFormInit = {
     mpUpPa: 0,
@@ -21,6 +22,13 @@ const MpFormInit = {
 };
 
 let accelMpUpMemoria, mpUpMemoria;
+
+const useStyles = makeStyles((theme) => ({
+    root: {
+        padding: theme.spacing(2),
+        width: '100%'
+    }
+}));
 
 const MpFormDef = [
     {
@@ -229,6 +237,8 @@ const MpCalcTab = ({ index, tabInfo, onFormChange }) => {
     const [isDirty, setDirty] = useState(false);
     const [results, setResults] = useState(null);
 
+    const classes = useStyles();
+
     const handleChange = () => {
         setDirty(true);
     };
@@ -269,26 +279,50 @@ const MpCalcTab = ({ index, tabInfo, onFormChange }) => {
         calculateResults(data);
     };
 
+    const reduceIfExists = (array, operation) => {
+        return array == null
+            ? 0
+            : array.reduce((sum, entry) => {
+                  return sum + operation(Number(entry.amount));
+              }, 0);
+    };
+
     const calculateResults = (data) => {
-        const accelMpUpPa =
-            Number(data.accelMpUpPa) * 0.01 +
-            (data.accelMpUpMemoria == null
-                ? 0
-                : data.accelMpUpMemoria.reduce((sum, cur) => sum + accelMpUpCalc(Number(cur.amount)), 0));
-        const mpUpPa =
-            Number(data.mpUpPa) * 0.01 +
-            (data.mpUpMemoria == null ? 0 : data.mpUpMemoria.reduce((sum, cur) => sum + mpUpCalc(Number(cur.amount)), 0));
-        setResults(
-            mpCalc(
-                data.accelCombo,
-                data.discSlot,
-                data.discType,
-                data.charType,
-                mpUpPa,
-                accelMpUpPa,
-                Number(data.chargeCount)
-            )
+        const accelMpUpPa = Number(data.accelMpUpPa) * 0.01 + reduceIfExists(data.accelMpUpMemoria, accelMpUpCalc);
+        const mpUpPa = Number(data.mpUpPa) * 0.01 + reduceIfExists(data.mpUpMemoria, mpUpCalc);
+        const mpTotal = mpCalc(
+            data.accelCombo,
+            data.discSlot,
+            data.discType,
+            data.charType,
+            mpUpPa,
+            accelMpUpPa,
+            Number(data.chargeCount)
         );
+        setResults({
+            interimResults: [
+                {
+                    label: 'AccelMPUP倍率',
+                    res: {
+                        value: accelMpUpPa * 100,
+                        postfix: '%'
+                    }
+                },
+                {
+                    label: 'MP獲得量UP倍率',
+                    res: {
+                        value: mpUpPa * 100,
+                        postfix: '%'
+                    }
+                }
+            ],
+            finalResult: {
+                label: '合計獲得MP',
+                res: {
+                    value: mpTotal
+                }
+            }
+        });
     };
 
     return (
@@ -298,12 +332,12 @@ const MpCalcTab = ({ index, tabInfo, onFormChange }) => {
                     {MpFormDef.map((item, index) => (
                         <FormField key={index} inputDef={item} fieldArrays={mpFormArrays} />
                     ))}
-                    <Button type='submit' color='primary' variant='contained'>
+                    <Button className={classes.root} type='submit' color='primary' variant='contained'>
                         Submit
                     </Button>
                 </form>
             </FormProvider>
-            {results && <div id='results'>{results}</div>}
+            {results && <ResultsDisplay {...results} />}
         </Container>
     );
 };
