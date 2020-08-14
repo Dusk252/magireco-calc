@@ -7,7 +7,10 @@ import DeleteIcon from '@material-ui/icons/Delete';
 const useStyles = makeStyles(() => ({
     root: {
         flexDirection: 'row',
-        flexWrap: 'nowrap'
+        flexWrap: 'nowrap',
+        '&:first-child': {
+            marginTop: '10px'
+        }
     }
 }));
 

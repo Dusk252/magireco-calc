@@ -1,105 +1,164 @@
-import React from 'react';
-import { useForm, useFieldArray, Controller } from 'react-hook-form';
-import * as damageCalcs from '../../../utils/damageCalcs';
+import React, { useState, useEffect } from 'react';
+import { useForm, useFieldArray, useWatch, FormProvider } from 'react-hook-form';
+import PropTypes from 'prop-types';
+import { Container, Grid, Typography, InputAdornment, Button, Collapse, makeStyles, Box } from '@material-ui/core';
+import {
+    FormSection,
+    TextInput,
+    SelectInput,
+    CheckboxInput,
+    FieldArrayWrapper,
+    FieldArrayElement,
+    RadioButtonInput
+} from '../../forms/FormComponents';
+import * as constants from '../../../constants/const';
+import * as dmgConstants from '../../../constants/dmgConst';
+import * as dmgCalcs from '../../../utils/damageCalcs';
 import * as memoriaCalcs from '../../../utils/memoriaCalcs';
-import ReactDOM from 'react-dom';
+import * as connectCalcs from '../../../utils/connectCalcs';
+import ResultsDisplay from '../../ResultsDisplay';
 
-//import './../styles.css';
+const DmgFormInit = {
+    atk: 0,
+    atkKakusei: 0,
+    atkMemoria: 0,
+    atkEnhance: 0,
+    def: 0,
+    defKakusei: 0,
+    defMemoria: 0,
+    defEnhance: 0,
+    discType: 'accele',
+    discSlot: '1',
+    discKakusei: 0,
+    zokuseiKankei: '0',
+    jinkeiAtk: '1',
+    chargeCount: 0,
+    questType: 'quest',
+    joutaiIjou: false,
+    blastCombo: false,
+    puellaCombo: false,
+    isMagiaOrDoppel: 'magia',
+    magiaDmg: 0,
+    magiaCombo: '1',
+    zokuseiKyoukaMagia: false,
 
-let renderCount = 0;
+    atkUpPa: 0,
+    defDownPa: 0,
+    dmgUpPa: 0,
+    dmgUpJoutaiPa: 0,
+    joutaiIjouDmgUpPa: 0,
+    blastDmgUpPa: 0,
+    //chargeDmgUpPa: 0,
+    chargeGoDmgUpPa: 0,
+    taiseiBairitsuPa: 0,
+    magiaDmgUpPa: 0,
+    doppelDmgUpPa: 0
+};
 
-const DamageCalcTab = () => {
-    const { register, control, handleSubmit, reset, getValues } = useForm({
-        defaultValues: {
-            atk: 0,
-            atkKakusei: 0,
-            atkMemoria: 0,
-            atkEnhance: 0,
-            def: 0,
-            defKakusei: 0,
-            defMemoria: 0,
-            defEnhance: 0,
-            zokuseiHosei: '0',
-            kimochiSen: false,
-            jinkeiAtk: '0',
-            magiaDoppel: 'magia',
-            magiaDmg: 0,
-            magiaLvl: '1',
-            magiaCombo: '1',
-            zokuseiKyoukaMagia: false,
-            atkUpPa: 0,
-            defDownPa: 0,
-            dmgUpPa: 0,
-            dmgUpJoutaiPa: 0,
-            joutaiIjouDmgUpPa: 0,
-            magiaDmgUpPa: 0,
-            doppelDmgUpPa: 0,
-            taiseiBairitsuPa: 0
-        }
+const useStyles = makeStyles((theme) => ({
+    root: {
+        padding: theme.spacing(2),
+        width: '100%'
+    }
+}));
+
+const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
+    //objects are merged so we can keep the user's localstorage even when new fields are added
+    const formValues = tabInfo.formState != null ? { ...DmgFormInit, ...tabInfo.formState } : DmgFormInit;
+    const [isDirty, setDirty] = useState(false);
+
+    const classes = useStyles();
+
+    const { getValues, ...formMethods } = useForm({
+        defaultValues: formValues
     });
+    const handleChange = () => {
+        setDirty(true);
+    };
+    formMethods.handleChange = handleChange;
+
+    const watchDiscType = useWatch({ name: 'discType', control: formMethods.control, defaultValue: formValues.discType });
+
     const atkHoseiMemoria = useFieldArray({
-        control,
+        control: formMethods.control,
         name: 'atkHoseiMemoria'
     });
     const dmgUpMemoria = useFieldArray({
-        control,
+        control: formMethods.control,
         name: 'dmgUpMemoria'
     });
     const dmgUpJoutaiMemoria = useFieldArray({
-        control,
+        control: formMethods.control,
         name: 'dmgUpJoutaiMemoria'
     });
     const joutaiIjouDmgUpMemoria = useFieldArray({
-        control,
+        control: formMethods.control,
         name: 'joutaiIjouDmgUpMemoria'
     });
-    const magiaDmgUpMemoria = useFieldArray({
-        control,
-        name: 'magiaDmgUpMemoria'
-    });
     const defHoseiMemoria = useFieldArray({
-        control,
+        control: formMethods.control,
         name: 'defHoseiMemoria'
     });
+    const blastDmgUpMemoria = useFieldArray({
+        control: formMethods.control,
+        name: 'blastDmgUpMemoria'
+    });
+    const chargeGoDmgUpMemoria = useFieldArray({
+        control: formMethods.control,
+        name: 'chargeGoDmgUpMemoria'
+    });
+    const magiaDmgUpMemoria = useFieldArray({
+        control: formMethods.control,
+        name: 'magiaDmgUpMemoria'
+    });
     const doppelDmgUp = useFieldArray({
-        control,
+        control: formMethods.control,
         name: 'doppelDmgUp'
     });
+    const atkHoseiConnect = useFieldArray({
+        control: formMethods.control,
+        name: 'atkHoseiConnect'
+    });
+    const dmgUpConnect = useFieldArray({
+        control: formMethods.control,
+        name: 'dmgUpConnect'
+    });
+    const joutaiIjouDmgUpConnect = useFieldArray({
+        control: formMethods.control,
+        name: 'joutaiIjouDmgUpConnect'
+    });
+    const defHoseiConnect = useFieldArray({
+        control: formMethods.control,
+        name: 'defHoseiConnect'
+    });
+    const blastDmgUpConnect = useFieldArray({
+        control: formMethods.control,
+        name: 'blastDmgUpConnect'
+    });
+    const chargeGoDmgUpConnect = useFieldArray({
+        control: formMethods.control,
+        name: 'chargeGoDmgUpConnect'
+    });
+    const magiaDmgUpConnect = useFieldArray({
+        control: formMethods.control,
+        name: 'magiaDmgUpConnect'
+    });
 
-    const magiaComboMap = {
-        '1': 1,
-        '2': 1.1,
-        '3': 1.2
+    const onSubmit = (data) => {
+        calculateResults(data);
     };
-    const jinkeiMap = {
-        '0': 1,
-        '1': 1.1,
-        '2': 1.15
-    };
-    const zokuseiMap = {
-        default: {
-            '0': 1,
-            '1': 1.5,
-            '2': 1.8,
-            '3': 0.5
-        },
-        kimochisen: {
-            '0': 0.75,
-            '1': 1.65,
-            '2': 1.94,
-            '3': 0.5
+
+    useEffect(() => {
+        if (isDirty) {
+            const timeout = setTimeout(() => {
+                onFormChange(getValues(), index);
+                setDirty(false);
+            }, 500);
+            return () => {
+                clearTimeout(timeout);
+            };
         }
-    };
-    const zokuseiKyoukaMagiaMap = {
-        default: {
-            '1': 3,
-            '2': 3
-        },
-        kimochisen: {
-            '1': 3.1,
-            '2': 3.72
-        }
-    };
+    }, [isDirty, getValues, onFormChange, index]);
 
     const reduceIfExists = (array, operation) => {
         return array == null
@@ -109,678 +168,879 @@ const DamageCalcTab = () => {
               }, 0);
     };
 
-    const [state, setState] = React.useState({
-        atkHosei: 1,
-        defHosei: 1,
-        jinkeiHosei: 1,
-        magiaDmgHosei: 1,
-        doppelDmgHosei: 0,
-        dmgDealtHosei: 0,
-        dmgHosei: 1,
-        finalDamage: {
-            min: 0,
-            max: 0
-        }
-    });
-
-    const onSubmit = (data) => {
-        const atkHosei = damageCalcs.atkHosei(
-            reduceIfExists(data.atkHoseiMemoria, memoriaCalcs.atkUp) + Number(data.atkUpPa) * 0.01
+    const calculateResults = (data) => {
+        const atkHosei = dmgCalcs.atkHosei(
+            reduceIfExists(data.atkHoseiMemoria, memoriaCalcs.atkUp) +
+                reduceIfExists(data.atkHoseiConnect, connectCalcs.atkUp) +
+                Number(data.atkUpPa) * 0.01
         );
-        const jinkeiHosei = jinkeiMap[data.jinkeiAtk];
-        const defHosei = damageCalcs.defHosei(
+        const defHosei = dmgCalcs.defHosei(
             reduceIfExists(data.defHoseiMemoria, memoriaCalcs.defDown) + Number(data.defDownPa) * 0.01
         );
-        const dmgDealt = damageCalcs.dmgUpHosei(
-            reduceIfExists(data.dmgUpMemoria, memoriaCalcs.dealtDmgUp) + Number(data.dmgUpPa) * 0.01
-        );
-        const magiaDmgHosei = damageCalcs.magiaHosei(
-            reduceIfExists(data.magiaDmgUpMemoria, memoriaCalcs.magiaDmgUp) + Number(data.magiaDmgUpPa) * 0.01
-        );
-        const doppelDmgHosei = damageCalcs.doppelHosei(
-            reduceIfExists(data.doppelDmgUp, memoriaCalcs.magiaDmgUp) + Number(data.doppelDmgUpPa) * 0.01
-        );
-        const dmgUpJoutai =
-            reduceIfExists(data.dmgUpJoutaiMemoria, memoriaCalcs.damageUp) + Number(data.dmgUpJoutaiPa) * 0.01;
-        const joutaiIjouDmgUp =
-            reduceIfExists(data.joutaiIjouDmgUpMemoria, memoriaCalcs.joutaiIjouDmgUp) +
-            Number(data.joutaiIjouDmgUpPa) * 0.01;
-
-        const dmgHosei = damageCalcs.dmgHoseiTotal(
-            dmgDealt,
-            dmgUpJoutai,
-            joutaiIjouDmgUp,
-            doppelDmgHosei,
-            data.magiaDoppel === 'doppel',
-            true
-        );
-        const magiaBaseDmg = damageCalcs.magiaBaseDmg(
-            Number(data.magiaDmg),
-            Number(data.magiaLvl),
-            data.magiaDoppel === 'doppel'
-        );
-
-        const jikkouAtk = damageCalcs.jikkouAtk(
+        const jikkouAtk = dmgCalcs.jikkouAtk(
             atkHosei,
             Number(data.atk),
             Number(data.atkMemoria),
             Number(data.atkEnhance),
             Number(data.atkKakusei),
-            jinkeiHosei
+            data.jinkeiAtk
         );
-        const jikkouDef = damageCalcs.jikkouDef(defHosei, Number(data.def));
-
-        const baseDamage = damageCalcs.baseDmg(jikkouAtk, jikkouDef);
-
-        const totalDamage = damageCalcs.totalDmg(
-            baseDamage,
-            magiaBaseDmg,
-            magiaComboMap[data.magiaCombo],
-            magiaDmgHosei,
-            3.72,
-            0,
-            dmgHosei
+        const jikkouDef = dmgCalcs.jikkouDef(
+            defHosei,
+            Number(data.def),
+            Number(data.defMemoria),
+            Number(data.defEnhance),
+            Number(data.defKakusei)
         );
+        const dmgUpHosei = dmgCalcs.dmgUpHosei(
+            reduceIfExists(data.dmgUpMemoria, memoriaCalcs.dealtDmgUp) +
+                reduceIfExists(data.dmgUpConnect, connectCalcs.dealtDmgUp) +
+                Number(data.dmgUpPa) * 0.01
+        );
+        const magiaDmgHosei = dmgCalcs.magiaHosei(
+            reduceIfExists(data.magiaDmgUpMemoria, memoriaCalcs.magiaDmgUp) +
+                reduceIfExists(data.magiaDmgUpConnect, connectCalcs.magiaDmgUp) +
+                Number(data.magiaDmgUpPa) * 0.01
+        );
+        const doppelDmgHosei = dmgCalcs.doppelHosei(
+            reduceIfExists(data.doppelDmgUp, memoriaCalcs.magiaDmgUp) + Number(data.doppelDmgUpPa) * 0.01
+        );
+        const dmgUpJoutaiHosei =
+            reduceIfExists(data.dmgUpJoutaiMemoria, memoriaCalcs.damageUp) + Number(data.dmgUpJoutaiPa) * 0.01;
+        const joutaiIjouDmgUp =
+            reduceIfExists(data.joutaiIjouDmgUpMemoria, memoriaCalcs.joutaiIjouDmgUp) +
+            reduceIfExists(data.joutaiIjouDmgUpConnect, connectCalcs.joutaiIjouDmgUp) +
+            Number(data.joutaiIjouDmgUpPa) * 0.01;
+        const blastDmgUp =
+            reduceIfExists(data.blastDmgUpMemoria, memoriaCalcs.blastDmgUp) +
+            reduceIfExists(data.blastDmgUpConnect, connectCalcs.blastDmgUp) +
+            Number(data.blastDmgUpPa) * 0.01;
+        const chargeGoDmgUp =
+            reduceIfExists(data.chargeGoDmgUpMemoria, memoriaCalcs.chargeGoDmgUp) +
+            reduceIfExists(data.chargeGoDmgUpConnect, connectCalcs.chargeGoDmgUp) +
+            Number(data.chargeGoDmgUpPa) * 0.01;
+
+        const dmgHosei = dmgCalcs.dmgHoseiTotal(
+            dmgUpHosei,
+            dmgUpJoutaiHosei,
+            joutaiIjouDmgUp,
+            doppelDmgHosei,
+            data.isMagiaOrDoppel === 'doppel',
+            data.joutaiIjou,
+            data.discType,
+            blastDmgUp
+        );
+        const baseDamage = dmgCalcs.baseDmg(jikkouAtk, jikkouDef);
+
+        const totalDamage =
+            data.discType === 'magia'
+                ? dmgCalcs.totalDmgMagia(
+                      baseDamage,
+                      Number(data.magiaDmg),
+                      data.magiaCombo,
+                      magiaDmgHosei,
+                      data.zokuseiKankei,
+                      Number(data.taiseiBairitsuPa),
+                      dmgHosei
+                  )
+                : dmgCalcs.totalDmgDisc(
+                      baseDamage,
+                      data.discType,
+                      data.discSlot,
+                      data.puellaCombo,
+                      data.blastCombo,
+                      Number(data.discKakusei),
+                      Number(data.chargeCount),
+                      chargeGoDmgUp,
+                      data.zokuseiKankei,
+                      Number(data.taiseiBairitsuPa),
+                      dmgHosei
+                  );
 
         const finalDamage = {
             min: totalDamage * 0.95,
             max: totalDamage * 1.05
         };
 
-        setState({
-            atkHosei: atkHosei,
-            defHosei: defHosei,
-            jinkeiHosei: jinkeiHosei,
-            magiaDmgHosei: magiaDmgHosei,
-            doppelDmgHosei: doppelDmgHosei,
-            dmgDealtHosei: dmgDealt,
-            dmgHosei: dmgHosei,
-            finalDamage: finalDamage
-        });
+        onFormSubmit(
+            {
+                interimResults: [
+                    {
+                        label: '実行ATK',
+                        res: {
+                            value: jikkouAtk
+                        }
+                    },
+                    {
+                        label: '実行DEF',
+                        res: {
+                            value: jikkouDef
+                        }
+                    },
+                    {
+                        label: '攻撃力補正',
+                        res: {
+                            value: atkHosei * 100,
+                            postfix: '%'
+                        }
+                    },
+                    {
+                        label: '防御力補正',
+                        res: {
+                            value: defHosei * 100,
+                            postfix: '%'
+                        }
+                    },
+                    {
+                        label: 'マギアダメージ補正',
+                        res: {
+                            value: magiaDmgHosei * 100,
+                            postfix: '%'
+                        }
+                    },
+                    {
+                        label: 'ドッペルダメージ補正',
+                        res: {
+                            value: doppelDmgHosei * 100,
+                            postfix: '%'
+                        }
+                    },
+                    {
+                        label: '与えるダメージ補正',
+                        res: {
+                            value: dmgUpHosei * 100,
+                            postfix: '%'
+                        }
+                    },
+                    {
+                        label: '補正係数',
+                        res: {
+                            value: dmgHosei * 100,
+                            postfix: '%'
+                        }
+                    }
+                ],
+                finalResult: {
+                    label: '最終ダメージ',
+                    res: {
+                        value: finalDamage.max
+                    }
+                }
+            },
+            index
+        );
     };
 
-    renderCount++;
-
     return (
-        <>
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <h1>MagiReco Damage Calculator</h1>
-                {/* <span className='counter'>Render Count: {renderCount}</span> */}
-                <section>
-                    <div>
-                        <p>基礎ATK</p>
-                        <input type='number' name='atk' ref={register()} />
-                    </div>
-                    <div>
-                        <p>ATKの覚醒％</p>
-                        <input type='number' name='atkKakusei' ref={register()} />
-                    </div>
-                    <div>
-                        <p>メモリアATK</p>
-                        <input type='number' name='atkMemoria' ref={register()} />
-                    </div>
-                    <div>
-                        <p>精神強化ATK</p>
-                        <input type='number' name='atkEnhance' ref={register()} />
-                    </div>
-                    <div>
-                        <p>基礎DEF</p>
-                        <input type='number' name='def' ref={register()} />
-                    </div>
-                    <div>
-                        <p>DEFの覚醒％</p>
-                        <input type='number' name='defKakusei' ref={register()} />
-                    </div>
-                    <div>
-                        <p>メモリアDEF</p>
-                        <input type='number' name='defMemoria' ref={register()} />
-                    </div>
-                    <div>
-                        <p>精神強化DEF</p>
-                        <input type='number' name='defEnhance' ref={register()} />
-                    </div>
-                </section>
-
-                <p>属性倍率</p>
-                <section>
-                    <select name='zokuseiHosei' ref={register()}>
-                        <option value='0'>有利不利なし</option>
-                        <option value='1'>有利</option>
-                        <option value='2'>有利＋特定状態異常</option>
-                        <option value='3'>不利</option>
-                    </select>
-                    <div>
-                        <p>キモチ戦</p>
-                        <input name='kimochiSen' type='checkbox' ref={register()} />
-                    </div>
-                </section>
-                <p>陣形補正</p>
-                <section>
-                    <select name='jinkeiAtk' ref={register()}>
-                        <option value='0'>なし</option>
-                        <option value='1'>攻撃力上昇[Ⅰ]</option>
-                        <option value='2'>攻撃力上昇[II]</option>
-                    </select>
-                </section>
-
-                <h1>マギア／ドッペル</h1>
-                <div>
-                    <p>マギア／ドッペル</p>
-                    <input type='radio' id='magia' name='magiaDoppel' value='magia' ref={register()} />
-                    <label htmlFor='magia'>マギア</label>
-                    <input type='radio' id='doppel' name='magiaDoppel' value='doppel' ref={register()} />
-                    <label htmlFor='doppel'>ドッペル</label>
-                </div>
-                <section>
-                    <div>
-                        <p>ダメージ%</p>
-                        <input type='number' name='magiaDmg' ref={register()} />
-                    </div>
-                    <div>
-                        <p>マギアレベル</p>
-                        <select name='magiaLvl' ref={register()}>
-                            <option value='1'>マギアLv1</option>
-                            <option value='2'>マギアLv2</option>
-                            <option value='3'>マギアLv3</option>
-                            <option value='4'>マギアLv4</option>
-                            <option value='5'>マギアLv5</option>
-                        </select>
-                    </div>
-                    <div>
-                        <p>属性強化</p>
-                        <input name='zokuseiKyoukaMagia' type='checkbox' ref={register()} />
-                    </div>
-                    <div>
-                        <p>マギアコンボ</p>
-                        <select name='magiaCombo' ref={register()}>
-                            <option value='1'>1つ目</option>
-                            <option value='2'>2つ目</option>
-                            <option value='3'>3つ目</option>
-                        </select>
-                    </div>
-                </section>
-
-                <h1>攻撃力UP</h1>
-                <section>
-                    <ul>
-                        {atkHoseiMemoria.fields.map((item, index) => {
-                            return (
-                                <li key={item.id}>
-                                    <Controller
-                                        as={
-                                            <select>
-                                                <option value='1'>攻撃力UP[I]</option>
-                                                <option value='2'>攻撃力UP[II]</option>
-                                                <option value='3'>攻撃力UP[III]</option>
-                                                <option value='4'>攻撃力UP[IV]</option>
-                                                <option value='5'>攻撃力UP[V]</option>
-                                                <option value='6'>攻撃力UP[VI]</option>
-                                                <option value='7'>攻撃力UP[VII]</option>
-                                                <option value='8'>攻撃力UP[VIII]</option>
-                                                <option value='9'>攻撃力UP[IX]</option>
-                                                <option value='10'>攻撃力UP[X]</option>
-                                            </select>
+        <Container maxWidth='md'>
+            <FormProvider {...formMethods}>
+                <form onSubmit={formMethods.handleSubmit(onSubmit)} autoComplete='off'>
+                    <FormSection>
+                        <Grid container>
+                            <Grid item xs={4} md={3}>
+                                <TextInput
+                                    name='atk'
+                                    label='基礎ATK'
+                                    validationObj={{
+                                        required: true,
+                                        validate: {
+                                            isInteger: (value) => Number.isInteger(Number(value))
                                         }
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={4} md={3}>
+                                <TextInput
+                                    name='atkKakusei'
+                                    label='覚醒ATK+倍率'
+                                    validationObj={{
+                                        required: true,
+                                        validate: {
+                                            isInteger: (value) => Number.isInteger(Number(value))
+                                        }
+                                    }}
+                                    InputProps={{
+                                        endAdornment: <InputAdornment position='end'>%</InputAdornment>
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={4} md={3}>
+                                <TextInput
+                                    name='atkMemoria'
+                                    label='メモリアATK'
+                                    validationObj={{
+                                        required: true,
+                                        validate: {
+                                            isInteger: (value) => Number.isInteger(Number(value))
+                                        }
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={4} md={3}>
+                                <TextInput
+                                    name='atkEnhance'
+                                    label='精神強化ATK'
+                                    validationObj={{
+                                        required: true,
+                                        validate: {
+                                            isInteger: (value) => Number.isInteger(Number(value))
+                                        }
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={4} md={3}>
+                                <TextInput
+                                    name='def'
+                                    label='基礎DEF'
+                                    validationObj={{
+                                        required: true,
+                                        validate: {
+                                            isInteger: (value) => Number.isInteger(Number(value))
+                                        }
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={4} md={3}>
+                                <TextInput
+                                    name='defKakusei'
+                                    label='覚醒DEF+倍率'
+                                    validationObj={{
+                                        required: true,
+                                        validate: {
+                                            isInteger: (value) => Number.isInteger(Number(value))
+                                        }
+                                    }}
+                                    InputProps={{
+                                        endAdornment: <InputAdornment position='end'>%</InputAdornment>
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={4} md={3}>
+                                <TextInput
+                                    name='defMemoria'
+                                    label='メモリアDEF'
+                                    validationObj={{
+                                        required: true,
+                                        validate: {
+                                            isInteger: (value) => Number.isInteger(Number(value))
+                                        }
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={4} md={3}>
+                                <TextInput
+                                    name='defEnhance'
+                                    label='精神強化DEF'
+                                    validationObj={{
+                                        required: true,
+                                        validate: {
+                                            isInteger: (value) => Number.isInteger(Number(value))
+                                        }
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={4} md={3}>
+                                <SelectInput
+                                    name='discType'
+                                    label='ディスク種類'
+                                    options={dmgConstants.DISC_TYPE_DROPDOWN}
+                                />
+                            </Grid>
+                            <Grid item xs={4} md={3}>
+                                <TextInput
+                                    name='discKakusei'
+                                    label={`覚醒${
+                                        dmgConstants.DISC_TYPE_DROPDOWN.find((el) => el.value == watchDiscType).text
+                                    }+倍率`}
+                                    validationObj={{
+                                        required: true,
+                                        validate: {
+                                            isInteger: (value) => Number.isInteger(Number(value))
+                                        }
+                                    }}
+                                    InputProps={{
+                                        endAdornment: <InputAdornment position='end'>%</InputAdornment>
+                                    }}
+                                    disabled={watchDiscType === 'magia'}
+                                />
+                            </Grid>
+                            <Grid item xs={4} md={3}>
+                                <SelectInput name='zokuseiKankei' label='属性関係' options={dmgConstants.ZOKUSEI_DROPDOWN} />
+                            </Grid>
+                            <Grid item xs={4} md={3}>
+                                <SelectInput name='jinkeiAtk' label='陣形効果' options={dmgConstants.JINKEI_DROPDOWN} />
+                            </Grid>
+                            <Grid item xs={4} md={3}>
+                                <TextInput
+                                    name='chargeCount'
+                                    label='チャージ数'
+                                    validationObj={{
+                                        required: true,
+                                        validate: {
+                                            isInteger: (value) => Number.isInteger(Number(value))
+                                        }
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={6} md={3}>
+                                <SelectInput
+                                    name='discSlot'
+                                    label='ディスク位置'
+                                    options={constants.DISC_SLOT_DROPDOWN}
+                                    disabled={watchDiscType === 'magia'}
+                                />
+                            </Grid>
+                            <Grid item xs={6} md={3}>
+                                <CheckboxInput name='puellaCombo' label='ピュエラコンボ' />
+                            </Grid>
+                            <Grid item xs={6} md={3}>
+                                <CheckboxInput name='blastCombo' label='ブラストコンボ' />
+                            </Grid>
+                            <Grid item xs={8} md={6}>
+                                <RadioButtonInput name='questType' options={dmgConstants.QUEST_TYPE_OPTIONS} />
+                            </Grid>
+                            <Grid item xs={4} md={3}>
+                                <CheckboxInput name='joutaiIjou' label='状態異常マス' />
+                            </Grid>
+                        </Grid>
+                        <Collapse in={watchDiscType === 'magia'} timeout='auto'>
+                            <Box pt={3} pb={0} mb={3} borderBottom={'1px solid rgba(255,255,255,.5)'}>
+                                <Typography variant='subtitle1'>マギア関係</Typography>
+                            </Box>
+                            <Grid container>
+                                <Grid item xs={6} md={3}>
+                                    <RadioButtonInput
+                                        name='isMagiaOrDoppel'
+                                        options={[
+                                            { value: 'magia', text: 'マギア' },
+                                            { value: 'doppel', text: 'ドッペル' }
+                                        ]}
+                                    />
+                                </Grid>
+                                <Grid item xs={6} md={3}>
+                                    <TextInput
+                                        name='magiaDmg'
+                                        label='ダメージ倍率'
+                                        validationObj={{
+                                            required: true,
+                                            validate: {
+                                                isNumber: (value) => !isNaN(Number(value))
+                                            }
+                                        }}
+                                        InputProps={{
+                                            endAdornment: <InputAdornment position='end'>%</InputAdornment>
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item xs={6} md={3}>
+                                    <SelectInput
+                                        name='magiaCombo'
+                                        label='マギアコンボ'
+                                        options={dmgConstants.MAGIA_COMBO_DROPDOWN}
+                                    />
+                                </Grid>
+                                <Grid item xs={6} md={3}>
+                                    <CheckboxInput name='zokuseiKyoukaMagia' label='属性強化' />
+                                </Grid>
+                            </Grid>
+                        </Collapse>
+                    </FormSection>
+                    <FormSection
+                        label='メモリア'
+                        collapse
+                        open={[
+                            atkHoseiMemoria,
+                            dmgUpMemoria,
+                            dmgUpJoutaiMemoria,
+                            joutaiIjouDmgUpMemoria,
+                            magiaDmgUpMemoria,
+                            defHoseiMemoria,
+                            blastDmgUpMemoria,
+                            //chargeDmgUpMemoria,
+                            chargeGoDmgUpMemoria,
+                            doppelDmgUp
+                        ].some((item) => item.length > 0)}
+                    >
+                        <FieldArrayWrapper name='atkHoseiMemoria' label='攻撃力UPメモリア' fieldArray={atkHoseiMemoria}>
+                            {atkHoseiMemoria.fields.map((field, index) => (
+                                <FieldArrayElement key={index} fieldArray={atkHoseiMemoria} index={index}>
+                                    <SelectInput
                                         name={`atkHoseiMemoria[${index}].amount`}
-                                        control={control}
+                                        options={Array.from(Array(10), (_, i) => {
+                                            return {
+                                                value: (i + 1).toString(),
+                                                text: '攻撃力UP' + constants.ROMAN_NUMERALS[i + 1]
+                                            };
+                                        })}
                                         defaultValue={'1'}
                                     />
-                                    <Controller
-                                        as={
-                                            <select>
-                                                <option value='0'>UP</option>
-                                                <option value='1'>DOWN</option>
-                                            </select>
-                                        }
-                                        name={`atkHoseiMemoria[${index}].type`}
-                                        control={control}
-                                        defaultValue={'0'}
-                                    />
-                                    <button type='button' onClick={() => atkHoseiMemoria.remove(index)}>
-                                        remove
-                                    </button>
-                                </li>
-                            );
-                        })}
-                    </ul>
-                    <button
-                        type='button'
-                        onClick={() => {
-                            atkHoseiMemoria.append({ amount: '1', type: '0' });
-                        }}
-                    >
-                        add
-                    </button>
-                </section>
-
-                <h1>与えるダメージUP</h1>
-                <section>
-                    <ul>
-                        {dmgUpMemoria.fields.map((item, index) => {
-                            return (
-                                <li key={item.id}>
-                                    <Controller
-                                        as={
-                                            <select>
-                                                <option value='1'>与えるダメージUP[I]</option>
-                                                <option value='2'>与えるダメージUP[II]</option>
-                                                <option value='3'>与えるダメージUP[III]</option>
-                                                <option value='4'>与えるダメージUP[IV]</option>
-                                                <option value='5'>与えるダメージUP[V]</option>
-                                                <option value='6'>与えるダメージUP[VI]</option>
-                                            </select>
-                                        }
+                                </FieldArrayElement>
+                            ))}
+                        </FieldArrayWrapper>
+                        <FieldArrayWrapper name='dmgUpMemoria' label='与えるダメージUPメモリア' fieldArray={dmgUpMemoria}>
+                            {dmgUpMemoria.fields.map((field, index) => (
+                                <FieldArrayElement key={index} fieldArray={dmgUpMemoria} index={index}>
+                                    <SelectInput
                                         name={`dmgUpMemoria[${index}].amount`}
-                                        control={control}
+                                        options={Array.from(Array(10), (_, i) => {
+                                            return {
+                                                value: (i + 1).toString(),
+                                                text: '与えるダメージUP' + constants.ROMAN_NUMERALS[i + 1]
+                                            };
+                                        })}
                                         defaultValue={'1'}
                                     />
-                                    <Controller
-                                        as={
-                                            <select>
-                                                <option value='0'>UP</option>
-                                                <option value='1'>DOWN</option>
-                                            </select>
-                                        }
-                                        name={`dmgUpMemoria[${index}].type`}
-                                        control={control}
-                                        defaultValue={'0'}
-                                    />
-                                    <button type='button' onClick={() => dmgUpMemoria.remove(index)}>
-                                        remove
-                                    </button>
-                                </li>
-                            );
-                        })}
-                    </ul>
-                    <button
-                        type='button'
-                        onClick={() => {
-                            dmgUpMemoria.append({ amount: '1', type: '0' });
-                        }}
-                    >
-                        add
-                    </button>
-                </section>
-
-                <h1>ダメージアップ状態</h1>
-                <section>
-                    <ul>
-                        {dmgUpJoutaiMemoria.fields.map((item, index) => {
-                            return (
-                                <li key={item.id}>
-                                    <Controller
-                                        as={
-                                            <select>
-                                                <option value='1'>ダメージアップ状態[I]</option>
-                                                <option value='2'>ダメージアップ状態[II]</option>
-                                                <option value='3'>ダメージアップ状態[III]</option>
-                                                <option value='4'>ダメージアップ状態[IV]</option>
-                                                <option value='5'>ダメージアップ状態[V]</option>
-                                                <option value='6'>ダメージアップ状態[VI]</option>
-                                                <option value='7'>ダメージアップ状態[VII]</option>
-                                                <option value='8'>ダメージアップ状態[VIII]</option>
-                                            </select>
-                                        }
+                                </FieldArrayElement>
+                            ))}
+                        </FieldArrayWrapper>
+                        <FieldArrayWrapper
+                            name='dmgUpJoutaiMemoria'
+                            label='ダメージアップ状態メモリア'
+                            fieldArray={dmgUpJoutaiMemoria}
+                        >
+                            {dmgUpJoutaiMemoria.fields.map((field, index) => (
+                                <FieldArrayElement key={index} fieldArray={dmgUpJoutaiMemoria} index={index}>
+                                    <SelectInput
                                         name={`dmgUpJoutaiMemoria[${index}].amount`}
-                                        control={control}
+                                        options={Array.from(Array(10), (_, i) => {
+                                            return {
+                                                value: (i + 1).toString(),
+                                                text: 'ダメージアップ状態' + constants.ROMAN_NUMERALS[i + 1]
+                                            };
+                                        })}
                                         defaultValue={'1'}
                                     />
-                                    <Controller
-                                        as={
-                                            <select>
-                                                <option value='0'>UP</option>
-                                                <option value='1'>DOWN</option>
-                                            </select>
-                                        }
-                                        name={`dmgUpJoutaiMemoria[${index}].type`}
-                                        control={control}
-                                        defaultValue={'0'}
-                                    />
-                                    <button type='button' onClick={() => dmgUpJoutaiMemoria.remove(index)}>
-                                        remove
-                                    </button>
-                                </li>
-                            );
-                        })}
-                    </ul>
-                    <button
-                        type='button'
-                        onClick={() => {
-                            dmgUpJoutaiMemoria.append({ amount: '1', type: '0' });
-                        }}
-                    >
-                        add
-                    </button>
-                </section>
-
-                <h1>敵状態異常時ダメージUP</h1>
-                <section>
-                    <ul>
-                        {joutaiIjouDmgUpMemoria.fields.map((item, index) => {
-                            return (
-                                <li key={item.id}>
-                                    <Controller
-                                        as={
-                                            <select>
-                                                <option value='1'>敵状態異常時ダメージUP[I]</option>
-                                                <option value='2'>敵状態異常時ダメージUP[II]</option>
-                                                <option value='3'>敵状態異常時ダメージUP[III]</option>
-                                                <option value='4'>敵状態異常時ダメージUP[IV]</option>
-                                                <option value='5'>敵状態異常時ダメージUP[V]</option>
-                                                <option value='6'>敵状態異常時ダメージUP[VI]</option>
-                                            </select>
-                                        }
+                                </FieldArrayElement>
+                            ))}
+                        </FieldArrayWrapper>
+                        <FieldArrayWrapper
+                            name='joutaiIjouDmgUpMemoria'
+                            label='敵状態異常時ダメージUPメモリア'
+                            fieldArray={joutaiIjouDmgUpMemoria}
+                        >
+                            {joutaiIjouDmgUpMemoria.fields.map((field, index) => (
+                                <FieldArrayElement key={index} fieldArray={joutaiIjouDmgUpMemoria} index={index}>
+                                    <SelectInput
                                         name={`joutaiIjouDmgUpMemoria[${index}].amount`}
-                                        control={control}
+                                        options={Array.from(Array(10), (_, i) => {
+                                            return {
+                                                value: (i + 1).toString(),
+                                                text: '敵状態異常時ダメージUP' + constants.ROMAN_NUMERALS[i + 1]
+                                            };
+                                        })}
                                         defaultValue={'1'}
                                     />
-                                    <Controller
-                                        as={
-                                            <select>
-                                                <option value='0'>UP</option>
-                                                <option value='1'>DOWN</option>
-                                            </select>
-                                        }
-                                        name={`joutaiIjouDmgUpMemoria[${index}].type`}
-                                        control={control}
-                                        defaultValue={'0'}
-                                    />
-                                    <button type='button' onClick={() => joutaiIjouDmgUpMemoria.remove(index)}>
-                                        remove
-                                    </button>
-                                </li>
-                            );
-                        })}
-                    </ul>
-                    <button
-                        type='button'
-                        onClick={() => {
-                            joutaiIjouDmgUpMemoria.append({ amount: '1', type: '0' });
-                        }}
-                    >
-                        add
-                    </button>
-                </section>
-
-                <h1>マギアダメージUP</h1>
-                <section>
-                    <ul>
-                        {magiaDmgUpMemoria.fields.map((item, index) => {
-                            return (
-                                <li key={item.id}>
-                                    <Controller
-                                        as={
-                                            <select>
-                                                <option value='1'>マギアダメージUP[I]</option>
-                                                <option value='2'>マギアダメージUP[II]</option>
-                                                <option value='3'>マギアダメージUP[III]</option>
-                                                <option value='4'>マギアダメージUP[IV]</option>
-                                                <option value='5'>マギアダメージUP[V]</option>
-                                                <option value='6'>マギアダメージUP[VI]</option>
-                                                <option value='7'>マギアダメージUP[VII]</option>
-                                                <option value='8'>マギアダメージUP[VIII]</option>
-                                                <option value='9'>マギアダメージUP[IX]</option>
-                                                <option value='10'>マギアダメージUP[X]</option>
-                                            </select>
-                                        }
-                                        name={`magiaDmgUpMemoria[${index}].amount`}
-                                        control={control}
-                                        defaultValue={'1'}
-                                    />
-                                    <Controller
-                                        as={
-                                            <select>
-                                                <option value='0'>UP</option>
-                                                <option value='1'>DOWN</option>
-                                            </select>
-                                        }
-                                        name={`magiaDmgUpMemoria[${index}].type`}
-                                        control={control}
-                                        defaultValue={'0'}
-                                    />
-                                    <button type='button' onClick={() => magiaDmgUpMemoria.remove(index)}>
-                                        remove
-                                    </button>
-                                </li>
-                            );
-                        })}
-                    </ul>
-                    <button
-                        type='button'
-                        onClick={() => {
-                            magiaDmgUpMemoria.append({ amount: '1', type: '0' });
-                        }}
-                    >
-                        add
-                    </button>
-                </section>
-
-                <h1>防御力DOWN</h1>
-                <section>
-                    <ul>
-                        {defHoseiMemoria.fields.map((item, index) => {
-                            return (
-                                <li key={item.id}>
-                                    <Controller
-                                        as={
-                                            <select>
-                                                <option value='1'>防御力DOWN[I]</option>
-                                                <option value='2'>防御力DOWN[II]</option>
-                                                <option value='3'>防御力DOWN[III]</option>
-                                                <option value='4'>防御力DOWN[IV]</option>
-                                                <option value='5'>防御力DOWN[V]</option>
-                                                <option value='6'>防御力DOWN[VI]</option>
-                                                <option value='7'>防御力DOWN[VII]</option>
-                                                <option value='8'>防御力DOWN[VIII]</option>
-                                                <option value='9'>防御力DOWN[IX]</option>
-                                                <option value='10'>防御力DOWN[X]</option>
-                                            </select>
-                                        }
+                                </FieldArrayElement>
+                            ))}
+                        </FieldArrayWrapper>
+                        <FieldArrayWrapper name='defHoseiMemoria' label='防御力DOWNメモリア' fieldArray={defHoseiMemoria}>
+                            {defHoseiMemoria.fields.map((field, index) => (
+                                <FieldArrayElement key={index} fieldArray={defHoseiMemoria} index={index}>
+                                    <SelectInput
                                         name={`defHoseiMemoria[${index}].amount`}
-                                        control={control}
+                                        options={Array.from(Array(10), (_, i) => {
+                                            return {
+                                                value: (i + 1).toString(),
+                                                text: '防御力DOWN' + constants.ROMAN_NUMERALS[i + 1]
+                                            };
+                                        })}
                                         defaultValue={'1'}
                                     />
-                                    <Controller
-                                        as={
-                                            <select>
-                                                <option value='0'>UP</option>
-                                                <option value='1'>DOWN</option>
-                                            </select>
-                                        }
-                                        name={`defHoseiMemoria[${index}].type`}
-                                        control={control}
+                                </FieldArrayElement>
+                            ))}
+                        </FieldArrayWrapper>
+                        <FieldArrayWrapper
+                            name='blastDmgUpMemoria'
+                            label='Blast ダメージUPメモリア'
+                            fieldArray={blastDmgUpMemoria}
+                        >
+                            {blastDmgUpMemoria.fields.map((field, index) => (
+                                <FieldArrayElement key={index} fieldArray={blastDmgUpMemoria} index={index}>
+                                    <SelectInput
+                                        name={`blastDmgUpMemoria[${index}].amount`}
+                                        options={Array.from(Array(10), (_, i) => {
+                                            return {
+                                                value: (i + 1).toString(),
+                                                text: 'Blast ダメージUP' + constants.ROMAN_NUMERALS[i + 1]
+                                            };
+                                        })}
                                         defaultValue={'1'}
                                     />
-                                    <button type='button' onClick={() => defHoseiMemoria.remove(index)}>
-                                        remove
-                                    </button>
-                                </li>
-                            );
-                        })}
-                    </ul>
-                    <button
-                        type='button'
-                        onClick={() => {
-                            defHoseiMemoria.append({ amount: '1', type: '0' });
-                        }}
-                    >
-                        add
-                    </button>
-                </section>
-
-                <h1>ドッペルダメージUP</h1>
-                <section>
-                    <ul>
-                        {doppelDmgUp.fields.map((item, index) => {
-                            return (
-                                <li key={item.id}>
-                                    <Controller
-                                        as={
-                                            <select>
-                                                <option value='1'>ドッペルダメージUP[I]</option>
-                                                <option value='2'>ドッペルダメージUP[II]</option>
-                                                <option value='3'>ドッペルダメージUP[III]</option>
-                                                <option value='4'>ドッペルダメージUP[IV]</option>
-                                                <option value='5'>ドッペルダメージUP[V]</option>
-                                            </select>
-                                        }
+                                </FieldArrayElement>
+                            ))}
+                        </FieldArrayWrapper>
+                        <FieldArrayWrapper
+                            name='chargeGoDmgUpMemoria'
+                            label='Charge後ダメージUPメモリア'
+                            fieldArray={chargeGoDmgUpMemoria}
+                        >
+                            {chargeGoDmgUpMemoria.fields.map((field, index) => (
+                                <FieldArrayElement key={index} fieldArray={chargeGoDmgUpMemoria} index={index}>
+                                    <SelectInput
+                                        name={`chargeGoDmgUpMemoria[${index}].amount`}
+                                        options={Array.from(Array(10), (_, i) => {
+                                            return {
+                                                value: (i + 1).toString(),
+                                                text: 'Charge後ダメージUP' + constants.ROMAN_NUMERALS[i + 1]
+                                            };
+                                        })}
+                                        defaultValue={'1'}
+                                    />
+                                </FieldArrayElement>
+                            ))}
+                        </FieldArrayWrapper>
+                        <FieldArrayWrapper
+                            name='magiaDmgUpMemoria'
+                            label='マギアダメージUPメモリア'
+                            fieldArray={magiaDmgUpMemoria}
+                        >
+                            {magiaDmgUpMemoria.fields.map((field, index) => (
+                                <FieldArrayElement key={index} fieldArray={magiaDmgUpMemoria} index={index}>
+                                    <SelectInput
+                                        name={`magiaDmgUpMemoria[${index}].amount`}
+                                        options={Array.from(Array(10), (_, i) => {
+                                            return {
+                                                value: (i + 1).toString(),
+                                                text: 'マギアダメージUP' + constants.ROMAN_NUMERALS[i + 1]
+                                            };
+                                        })}
+                                        defaultValue={'1'}
+                                    />
+                                </FieldArrayElement>
+                            ))}
+                        </FieldArrayWrapper>
+                        <FieldArrayWrapper name='doppelDmgUp' label='ドッペルダメージUP' fieldArray={doppelDmgUp}>
+                            {doppelDmgUp.fields.map((field, index) => (
+                                <FieldArrayElement key={index} fieldArray={doppelDmgUp} index={index}>
+                                    <SelectInput
                                         name={`doppelDmgUp[${index}].amount`}
-                                        control={control}
+                                        options={Array.from(Array(10), (_, i) => {
+                                            return {
+                                                value: (i + 1).toString(),
+                                                text: 'ドッペルダメージUP' + constants.ROMAN_NUMERALS[i + 1]
+                                            };
+                                        })}
                                         defaultValue={'1'}
                                     />
-                                    <Controller
-                                        as={
-                                            <select>
-                                                <option value='0'>UP</option>
-                                                <option value='1'>DOWN</option>
-                                            </select>
-                                        }
-                                        name={`doppelDmgUp[${index}].type`}
-                                        control={control}
-                                        defaultValue={'0'}
-                                    />
-                                    <button type='button' onClick={() => doppelDmgUp.remove(index)}>
-                                        remove
-                                    </button>
-                                </li>
-                            );
-                        })}
-                    </ul>
-                    <button
-                        type='button'
-                        onClick={() => {
-                            doppelDmgUp.append({ amount: '1', type: '0' });
-                        }}
+                                </FieldArrayElement>
+                            ))}
+                        </FieldArrayWrapper>
+                    </FormSection>
+                    <FormSection
+                        label='コネクト'
+                        collapse
+                        open={[
+                            atkHoseiConnect,
+                            dmgUpConnect,
+                            joutaiIjouDmgUpConnect,
+                            magiaDmgUpConnect,
+                            defHoseiConnect,
+                            blastDmgUpConnect,
+                            //chargeDmgUpConnect,
+                            chargeGoDmgUpConnect
+                        ].some((item) => item.length > 0)}
                     >
-                        add
-                    </button>
-                </section>
-
-                <h1>カスタムパーセント補正</h1>
-                <section>
-                    <div>
-                        <p>攻撃力UP%</p>
-                        <input type='number' name='atkUpPa' ref={register()} />
-                    </div>
-                    <div>
-                        <p>与えるダメージUP％</p>
-                        <input type='number' name='dmgUpPa' ref={register()} />
-                    </div>
-                    <div>
-                        <p>ダメージアップ状態%</p>
-                        <input type='number' name='dmgUpJoutaiPa' ref={register()} />
-                    </div>
-                    <div>
-                        <p>敵状態異常時ダメージUP%</p>
-                        <input type='number' name='joutaiIjouDmgUpPa' ref={register()} />
-                    </div>
-                    <div>
-                        <p>マギアダメージUP%</p>
-                        <input type='number' name='magiaDmgUpPa' ref={register()} />
-                    </div>
-                    <div>
-                        <p>防御力DOWN%</p>
-                        <input type='number' name='defDownPa' ref={register()} />
-                    </div>
-                    <div>
-                        <p>ドッペルダメージUP％</p>
-                        <input type='number' name='doppelDmgUpPa' ref={register()} />
-                    </div>
-                    <div>
-                        <p>耐性倍率％</p>
-                        <input type='number' name='taiseiBairitsuPa' ref={register()} />
-                    </div>
-                </section>
-
-                <input type='submit' />
-            </form>
-
-            <p
-            // className={
-            //     state.atkHosei < kyoukaLimits.atkHosei.min
-            //         ? 'outside-limit'
-            //         : state.atkHosei == kyoukaLimits.atkHosei.min || state.atkHosei == kyoukaLimits.atkHosei.max
-            //         ? 'on-limit'
-            //         : state.atkHosei > kyoukaLimits.atkHosei.max
-            //         ? 'outside-limit'
-            //         : ''
-            // }
-            >
-                攻撃力補正: {Math.round(state.atkHosei * 100)}%
-            </p>
-            <p
-            // className={
-            //     state.defHosei < kyoukaLimits.defHosei.min
-            //         ? 'outside-limit'
-            //         : state.defHosei == kyoukaLimits.defHosei.min || state.defHosei == kyoukaLimits.defHosei.max
-            //         ? 'on-limit'
-            //         : state.defHosei > kyoukaLimits.defHosei.max
-            //         ? 'outside-limit'
-            //         : ''
-            // }
-            >
-                防御力補正: {Math.round(state.defHosei * 100)}%
-            </p>
-            <p
-            // className={
-            //     state.magiaDmgHosei < kyoukaLimits.magiaDmgHosei.min
-            //         ? 'outside-limit'
-            //         : state.magiaDmgHosei == kyoukaLimits.magiaDmgHosei.min ||
-            //           state.magiaDmgHosei == kyoukaLimits.magiaDmgHosei.max
-            //         ? 'on-limit'
-            //         : state.magiaDmgHosei > kyoukaLimits.magiaDmgHosei.max
-            //         ? 'outside-limit'
-            //         : ''
-            // }
-            >
-                マギアダメージ補正: {Math.round(state.magiaDmgHosei * 100)}%
-            </p>
-            <p
-            // className={
-            //     state.doppelDmgHosei < kyoukaLimits.doppelDmgHosei.min
-            //         ? 'outside-limit'
-            //         : state.doppelDmgHosei == kyoukaLimits.doppelDmgHosei.min ||
-            //           state.doppelDmgHosei == kyoukaLimits.doppelDmgHosei.max
-            //         ? 'on-limit'
-            //         : state.doppelDmgHosei > kyoukaLimits.doppelDmgHosei.max
-            //         ? 'outside-limit'
-            //         : ''
-            // }
-            >
-                ドッペルダメージ補正: {Math.round(state.doppelDmgHosei * 100)}%
-            </p>
-            <p
-            // className={
-            //     state.dmgDealtHosei < kyoukaLimits.dmgDealtHosei.min
-            //         ? 'outside-limit'
-            //         : state.dmgDealtHosei == kyoukaLimits.dmgDealtHosei.min ||
-            //           state.dmgDealtHosei == kyoukaLimits.dmgDealtHosei.max
-            //         ? 'on-limit'
-            //         : state.dmgDealtHosei > kyoukaLimits.dmgDealtHosei.max
-            //         ? 'outside-limit'
-            //         : ''
-            // }
-            >
-                与えるダメージ補正: {Math.round(state.dmgDealtHosei * 100)}%
-            </p>
-            <p
-            // className={
-            //     state.dmgHosei < kyoukaLimits.dmgHosei.min
-            //         ? 'outside-limit'
-            //         : state.dmgHosei == kyoukaLimits.dmgHosei.min || state.dmgHosei == kyoukaLimits.dmgHosei.max
-            //         ? 'on-limit'
-            //         : state.dmgHosei > kyoukaLimits.dmgHosei.max
-            //         ? 'outside-limit'
-            //         : ''
-            // }
-            >
-                補正係数: {Math.round(state.dmgHosei * 100)}%
-            </p>
-            <h1>最終ダメージ</h1>
-            <p>Min: {state.finalDamage.min}</p>
-            <p>Max: {state.finalDamage.max}</p>
-        </>
+                        <FieldArrayWrapper name='atkHoseiConnect' label='攻撃力UPコネクト' fieldArray={atkHoseiConnect}>
+                            {atkHoseiConnect.fields.map((field, index) => (
+                                <FieldArrayElement key={index} fieldArray={atkHoseiConnect} index={index}>
+                                    <SelectInput
+                                        name={`atkHoseiConnect[${index}].amount`}
+                                        options={Array.from(Array(10), (_, i) => {
+                                            return {
+                                                value: (i + 1).toString(),
+                                                text: '攻撃力UP' + constants.ROMAN_NUMERALS[i + 1]
+                                            };
+                                        })}
+                                        defaultValue={'1'}
+                                    />
+                                </FieldArrayElement>
+                            ))}
+                        </FieldArrayWrapper>
+                        <FieldArrayWrapper name='dmgUpConnect' label='与えるダメージUPコネクト' fieldArray={dmgUpConnect}>
+                            {dmgUpConnect.fields.map((field, index) => (
+                                <FieldArrayElement key={index} fieldArray={dmgUpConnect} index={index}>
+                                    <SelectInput
+                                        name={`dmgUpConnect[${index}].amount`}
+                                        options={Array.from(Array(10), (_, i) => {
+                                            return {
+                                                value: (i + 1).toString(),
+                                                text: '与えるダメージUP' + constants.ROMAN_NUMERALS[i + 1]
+                                            };
+                                        })}
+                                        defaultValue={'1'}
+                                    />
+                                </FieldArrayElement>
+                            ))}
+                        </FieldArrayWrapper>
+                        <FieldArrayWrapper
+                            name='joutaiIjouDmgUpConnect'
+                            label='敵状態異常時ダメージUPコネクト'
+                            fieldArray={joutaiIjouDmgUpConnect}
+                        >
+                            {joutaiIjouDmgUpConnect.fields.map((field, index) => (
+                                <FieldArrayElement key={index} fieldArray={joutaiIjouDmgUpConnect} index={index}>
+                                    <SelectInput
+                                        name={`joutaiIjouDmgUpConnect[${index}].amount`}
+                                        options={Array.from(Array(10), (_, i) => {
+                                            return {
+                                                value: (i + 1).toString(),
+                                                text: '敵状態異常時ダメージUP' + constants.ROMAN_NUMERALS[i + 1]
+                                            };
+                                        })}
+                                        defaultValue={'1'}
+                                    />
+                                </FieldArrayElement>
+                            ))}
+                        </FieldArrayWrapper>
+                        <FieldArrayWrapper name='defHoseiConnect' label='防御力DOWNコネクト' fieldArray={defHoseiConnect}>
+                            {defHoseiConnect.fields.map((field, index) => (
+                                <FieldArrayElement key={index} fieldArray={defHoseiConnect} index={index}>
+                                    <SelectInput
+                                        name={`defHoseiConnect[${index}].amount`}
+                                        options={Array.from(Array(10), (_, i) => {
+                                            return {
+                                                value: (i + 1).toString(),
+                                                text: '防御力DOWN' + constants.ROMAN_NUMERALS[i + 1]
+                                            };
+                                        })}
+                                        defaultValue={'1'}
+                                    />
+                                </FieldArrayElement>
+                            ))}
+                        </FieldArrayWrapper>
+                        <FieldArrayWrapper
+                            name='blastDmgUpConnect'
+                            label='Blast ダメージUPコネクト'
+                            fieldArray={blastDmgUpConnect}
+                        >
+                            {blastDmgUpConnect.fields.map((field, index) => (
+                                <FieldArrayElement key={index} fieldArray={blastDmgUpConnect} index={index}>
+                                    <SelectInput
+                                        name={`blastDmgUpConnect[${index}].amount`}
+                                        options={Array.from(Array(10), (_, i) => {
+                                            return {
+                                                value: (i + 1).toString(),
+                                                text: 'Blast ダメージUP' + constants.ROMAN_NUMERALS[i + 1]
+                                            };
+                                        })}
+                                        defaultValue={'1'}
+                                    />
+                                </FieldArrayElement>
+                            ))}
+                        </FieldArrayWrapper>
+                        <FieldArrayWrapper
+                            name='chargeGoDmgUpConnect'
+                            label='Charge後ダメージUPコネクト'
+                            fieldArray={chargeGoDmgUpConnect}
+                        >
+                            {chargeGoDmgUpConnect.fields.map((field, index) => (
+                                <FieldArrayElement key={index} fieldArray={chargeGoDmgUpConnect} index={index}>
+                                    <SelectInput
+                                        name={`chargeGoDmgUpConnect[${index}].amount`}
+                                        options={Array.from(Array(10), (_, i) => {
+                                            return {
+                                                value: (i + 1).toString(),
+                                                text: 'Charge後ダメージUP' + constants.ROMAN_NUMERALS[i + 1]
+                                            };
+                                        })}
+                                        defaultValue={'1'}
+                                    />
+                                </FieldArrayElement>
+                            ))}
+                        </FieldArrayWrapper>
+                        <FieldArrayWrapper
+                            name='magiaDmgUpConnect'
+                            label='マギアダメージUPコネクト'
+                            fieldArray={magiaDmgUpConnect}
+                        >
+                            {magiaDmgUpConnect.fields.map((field, index) => (
+                                <FieldArrayElement key={index} fieldArray={magiaDmgUpConnect} index={index}>
+                                    <SelectInput
+                                        name={`magiaDmgUpConnect[${index}].amount`}
+                                        options={Array.from(Array(10), (_, i) => {
+                                            return {
+                                                value: (i + 1).toString(),
+                                                text: 'マギアダメージUP' + constants.ROMAN_NUMERALS[i + 1]
+                                            };
+                                        })}
+                                        defaultValue={'1'}
+                                    />
+                                </FieldArrayElement>
+                            ))}
+                        </FieldArrayWrapper>
+                    </FormSection>
+                    <FormSection label='倍率としての入力'>
+                        <Typography variant='body2'>
+                            ※メモリアやコネクトを入力した場合、この数字がそれで計算された倍率に足されます。
+                        </Typography>
+                        <Grid container>
+                            <Grid item xs={4} md={3}>
+                                <TextInput
+                                    name='atkUpPa'
+                                    label='攻撃力UP倍率'
+                                    validationObj={{
+                                        required: true,
+                                        validate: {
+                                            isNumber: (value) => !isNaN(Number(value))
+                                        }
+                                    }}
+                                    InputProps={{
+                                        endAdornment: <InputAdornment position='end'>%</InputAdornment>
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={4} md={3}>
+                                <TextInput
+                                    name='defDownPa'
+                                    label='防御力DOWN倍率'
+                                    validationObj={{
+                                        required: true,
+                                        validate: {
+                                            isNumber: (value) => !isNaN(Number(value))
+                                        }
+                                    }}
+                                    InputProps={{
+                                        endAdornment: <InputAdornment position='end'>%</InputAdornment>
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={4} md={3}>
+                                <TextInput
+                                    name='dmgUpPa'
+                                    label='与えるダメージUP倍率'
+                                    validationObj={{
+                                        required: true,
+                                        validate: {
+                                            isNumber: (value) => !isNaN(Number(value))
+                                        }
+                                    }}
+                                    InputProps={{
+                                        endAdornment: <InputAdornment position='end'>%</InputAdornment>
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={4} md={3}>
+                                <TextInput
+                                    name='dmgUpJoutaiPa'
+                                    label='ダメージアップ状態倍率'
+                                    validationObj={{
+                                        required: true,
+                                        validate: {
+                                            isNumber: (value) => !isNaN(Number(value))
+                                        }
+                                    }}
+                                    InputProps={{
+                                        endAdornment: <InputAdornment position='end'>%</InputAdornment>
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={4} md={3}>
+                                <TextInput
+                                    name='joutaiIjouDmgUpPa'
+                                    label='敵状態異常時ダメージUP倍率'
+                                    validationObj={{
+                                        required: true,
+                                        validate: {
+                                            isNumber: (value) => !isNaN(Number(value))
+                                        }
+                                    }}
+                                    InputProps={{
+                                        endAdornment: <InputAdornment position='end'>%</InputAdornment>
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={4} md={3}>
+                                <TextInput
+                                    name='blastDmgUpPa'
+                                    label='敵状態異常時ダメージUP倍率'
+                                    validationObj={{
+                                        required: true,
+                                        validate: {
+                                            isNumber: (value) => !isNaN(Number(value))
+                                        }
+                                    }}
+                                    InputProps={{
+                                        endAdornment: <InputAdornment position='end'>%</InputAdornment>
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={4} md={3}>
+                                <TextInput
+                                    name='chargeGoDmgUpPa'
+                                    label='敵状態異常時ダメージUP倍率'
+                                    validationObj={{
+                                        required: true,
+                                        validate: {
+                                            isNumber: (value) => !isNaN(Number(value))
+                                        }
+                                    }}
+                                    InputProps={{
+                                        endAdornment: <InputAdornment position='end'>%</InputAdornment>
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={4} md={3}>
+                                <TextInput
+                                    name='taiseiBairitsuPa'
+                                    label='耐性倍率倍率'
+                                    validationObj={{
+                                        required: true,
+                                        validate: {
+                                            isNumber: (value) => !isNaN(Number(value))
+                                        }
+                                    }}
+                                    InputProps={{
+                                        endAdornment: <InputAdornment position='end'>%</InputAdornment>
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={4} md={3}>
+                                <TextInput
+                                    name='magiaDmgUpPa'
+                                    label='マギアダメージUP倍率'
+                                    validationObj={{
+                                        required: true,
+                                        validate: {
+                                            isNumber: (value) => !isNaN(Number(value))
+                                        }
+                                    }}
+                                    InputProps={{
+                                        endAdornment: <InputAdornment position='end'>%</InputAdornment>
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={4} md={3}>
+                                <TextInput
+                                    name='doppelDmgUpPa'
+                                    label='ドッペルダメージUP倍率'
+                                    validationObj={{
+                                        required: true,
+                                        validate: {
+                                            isNumber: (value) => !isNaN(Number(value))
+                                        }
+                                    }}
+                                    InputProps={{
+                                        endAdornment: <InputAdornment position='end'>%</InputAdornment>
+                                    }}
+                                />
+                            </Grid>
+                        </Grid>
+                    </FormSection>
+                    <Button className={classes.root} type='submit' color='primary' variant='contained'>
+                        Submit
+                    </Button>
+                </form>
+            </FormProvider>
+            {tabInfo.results && <ResultsDisplay {...tabInfo.results} />}
+        </Container>
     );
 };
 
-export default DamageCalcTab;
+DmgCalcTab.propTypes = {
+    index: PropTypes.any.isRequired,
+    tabInfo: PropTypes.object.isRequired,
+    onFormChange: PropTypes.func.isRequired,
+    onFormSubmit: PropTypes.func.isRequired
+};
+
+export default DmgCalcTab;

@@ -7,7 +7,18 @@ import { FormControl, FormControlLabel, FormLabel, FormHelperText, RadioGroup, R
 const useStyles = makeStyles((theme) => ({
     root: {
         padding: theme.spacing(1),
+        height: '100%',
         minWidth: 120
+    },
+    radioGroup: {
+        flexDirection: 'row',
+        height: '100%',
+        alignItems: 'center'
+    },
+    formControlLabel: {
+        '&:last-child': {
+            marginRight: theme.spacing(0)
+        }
     }
 }));
 
@@ -18,9 +29,10 @@ const RadioButtonInput = ({ name, label, defaultValue, options, validationObj })
         <FormControl className={classes.root} fullWidth>
             <Controller
                 render={({ onChange, onBlur, value }) => (
-                    <FormControl component='fieldset'>
+                    <FormControl className={classes.radioGroup} component='fieldset'>
                         {label && <FormLabel component='legend'>{label}</FormLabel>}
                         <RadioGroup
+                            className={classes.radioGroup}
                             aria-label={name}
                             name={name}
                             onChange={(e) => {
@@ -33,7 +45,13 @@ const RadioButtonInput = ({ name, label, defaultValue, options, validationObj })
                         >
                             {options.map((opt, index) => {
                                 return (
-                                    <FormControlLabel value={opt.value} key={index} control={<Radio />} label={opt.text} />
+                                    <FormControlLabel
+                                        value={opt.value}
+                                        key={index}
+                                        control={<Radio color='primary' />}
+                                        label={opt.text}
+                                        className={classes.formControlLabel}
+                                    />
                                 );
                             })}
                         </RadioGroup>
@@ -53,8 +71,8 @@ const RadioButtonInput = ({ name, label, defaultValue, options, validationObj })
 RadioButtonInput.propTypes = {
     name: PropTypes.string.isRequired,
     label: PropTypes.string,
-    defaultValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    options: PropTypes.object.isRequired,
+    defaultValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    options: PropTypes.array.isRequired,
     validationObj: PropTypes.object
 };
 

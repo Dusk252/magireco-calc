@@ -35,6 +35,26 @@ const theme = createMuiTheme({
         MuiInputLabel: {
             root: {
                 display: 'inline-block'
+            },
+            shrink: {
+                transform: 'translate(0, 1.5px) scale(1)',
+                fontSize: '0.75rem'
+            },
+            outlined: {
+                '&$shrink': {
+                    transform: 'translate(14px, -6px) scale(1)',
+                    background: '#424242',
+                    border: 'solid 5px #424242',
+                    borderTop: '0',
+                    left: '-3px'
+                }
+            }
+        },
+        MuiTypography: {
+            body2: {
+                color: 'rgba(255, 255, 255, 0.7)',
+                fontSize: '0.75rem',
+                marginBottom: '12px'
             }
         }
         // MuiListItem: {

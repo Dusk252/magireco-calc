@@ -11,3 +11,7 @@ export function addMpFormTab(title) {
 export function removeMpFormTab(index) {
     return { type: types.REMOVE_MP_FORM_TAB, index };
 }
+
+export function updateMpFormResults(results, index) {
+    return { type: types.UPDATE_MP_FORM_RESULTS, results, index };
+}

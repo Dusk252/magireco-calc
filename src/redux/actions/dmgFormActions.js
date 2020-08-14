@@ -11,3 +11,7 @@ export function addDmgFormTab(title) {
 export function removeDmgFormTab(index) {
     return { type: types.REMOVE_DMG_FORM_TAB, index };
 }
+
+export function updateDmgFormResults(results, index) {
+    return { type: types.UPDATE_DMG_FORM_RESULTS, results, index };
+}

@@ -1,16 +1,21 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { updateDmgFormTab, addDmgFormTab, removeDmgFormTab } from '../../../redux/actions/dmgFormActions';
+import {
+    updateDmgFormTab,
+    addDmgFormTab,
+    removeDmgFormTab,
+    updateDmgFormResults
+} from '../../../redux/actions/dmgFormActions';
 import { Tabs, AppBar } from '@material-ui/core';
 import TabItem from '../../tabs/TabItem';
 import TabPanel from '../../tabs/TabPanel';
 import TabAddDialog from '../../tabs/TabAddDialog';
-import DmgCalcTab from '../mp/MpCalcTab';
+import DmgCalcTab from '../dmg/DmgCalcTab';
 
 let renderCount = 0;
 
-const DmgCalcPage = ({ updateFormTab, addFormTab, removeFormTab, formTabsState }) => {
+const DmgCalcPage = ({ updateFormTab, addFormTab, removeFormTab, updateFormResults, formTabsState }) => {
     const [currentTab, setCurrentTab] = useState(0);
     const [removingTab, setRemovingTab] = useState(false);
 
@@ -30,9 +35,7 @@ const DmgCalcPage = ({ updateFormTab, addFormTab, removeFormTab, formTabsState }
         removeFormTab(index);
         setCurrentTab((currentTab) => {
             return currentTab === index
-                ? index === 0
-                    ? index + 1
-                    : index === formTabsState.length - 1
+                ? index === formTabsState.length - 1
                     ? index - 1
                     : index
                 : currentTab < index
@@ -73,7 +76,12 @@ const DmgCalcPage = ({ updateFormTab, addFormTab, removeFormTab, formTabsState }
                 formTabsState.map((tab, index) => {
                     return (
                         <TabPanel value={currentTab} index={index} key={index}>
-                            <DmgCalcTab index={index} tabInfo={formTabsState[index]} onFormChange={handleFormChanges} />
+                            <DmgCalcTab
+                                index={index}
+                                tabInfo={formTabsState[index]}
+                                onFormChange={handleFormChanges}
+                                onFormSubmit={updateFormResults}
+                            />
                         </TabPanel>
                     );
                 })}
@@ -85,6 +93,7 @@ DmgCalcPage.propTypes = {
     updateFormTab: PropTypes.func.isRequired,
     addFormTab: PropTypes.func.isRequired,
     removeFormTab: PropTypes.func.isRequired,
+    updateFormResults: PropTypes.func.isRequired,
     formTabsState: PropTypes.array.isRequired
 };
 
@@ -95,7 +104,8 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = {
     updateFormTab: updateDmgFormTab,
     addFormTab: addDmgFormTab,
-    removeFormTab: removeDmgFormTab
+    removeFormTab: removeDmgFormTab,
+    updateFormResults: updateDmgFormResults
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DmgCalcPage);

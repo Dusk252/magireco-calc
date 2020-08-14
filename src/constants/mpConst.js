@@ -1,38 +1,39 @@
 export const INITIAL_VALUES = {
-    accel: {
-        1: 10,
-        2: 10.5,
-        3: 14,
-        text: 'Accele'
+    default: {
+        accele: {
+            1: 10,
+            2: 10.5,
+            3: 14
+        },
+        blast: {
+            1: 0,
+            2: 0,
+            3: 0
+        },
+        charge: {
+            1: 2,
+            2: 3,
+            3: 4
+        }
     },
-    blast: {
-        1: 0,
-        2: 0,
-        3: 0,
-        text: 'Blast'
-    },
-    charge: {
-        1: 2,
-        2: 3,
-        3: 4,
-        text: 'Charge'
+    mirrors: {
+        accele: {
+            1: 13.5,
+            2: 15.75,
+            3: 21
+        },
+        blast: {
+            1: 0,
+            2: 0,
+            3: 0
+        },
+        charge: {
+            1: 3,
+            2: 4.5,
+            3: 6
+        }
     }
 };
-
-export const DISC_SLOT_DROPDOWN = [
-    {
-        value: '1',
-        text: '1手目'
-    },
-    {
-        value: '2',
-        text: '2手目'
-    },
-    {
-        value: '3',
-        text: '3手目'
-    }
-];
 
 export const CHAR_TYPES_MP_MOD = {
     magia: 1.2,
@@ -43,7 +44,7 @@ export const CHAR_TYPES_MP_MOD = {
     defense: 0.8
 };
 
-export const CHAR_TYPES_DROPDOWN = [
+export const CHAR_TYPE_DROPDOWN = [
     {
         value: 'magia',
         text: 'マギア'
@@ -67,5 +68,20 @@ export const CHAR_TYPES_DROPDOWN = [
     {
         value: 'defense',
         text: 'ディフェンス'
+    }
+];
+
+export const DISC_TYPE_DROPDOWN = [
+    {
+        value: 'accele',
+        text: 'アクセル'
+    },
+    {
+        value: 'blast',
+        text: 'ブラスト'
+    },
+    {
+        value: 'charge',
+        text: 'チャージ'
     }
 ];

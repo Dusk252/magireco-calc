@@ -21,6 +21,21 @@ export const ROMAN_NUMERALS = {
     20: 'XX'
 };
 
+export const DISC_SLOT_DROPDOWN = [
+    {
+        value: '1',
+        text: '1手目'
+    },
+    {
+        value: '2',
+        text: '2手目'
+    },
+    {
+        value: '3',
+        text: '3手目'
+    }
+];
+
 export const VALIDATION_MESSAGES = {
     required: 'Please fill in the field.',
     isNumber: 'The input has to be a number.',

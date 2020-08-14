@@ -24,12 +24,12 @@ const CMPTable = {
     20: 8.0
 };
 
-export const mpCalc = (accelCombo, discSlot, discType, charType, mpUp, accelMpUp, chargeCount) => {
+export const mpCalc = (acceleBonus, mirrors, discSlot, discType, charType, mpUp, acceleMpUp, chargeCount) => {
     return (
-        (initialValues[discType][discSlot] + (accelCombo && discSlot != 1 ? 3 : 0)) *
+        (initialValues[mirrors ? 'mirrors' : 'default'][discType][discSlot] + (acceleBonus && discSlot != 1 ? 3 : 0)) *
         charTypesMpMod[charType] *
         (1 + mpUp) *
-        (1 + accelMpUp) *
+        (1 + acceleMpUp) *
         CMPTable[Math.min(chargeCount, 20)]
     );
 };

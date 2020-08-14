@@ -4,10 +4,10 @@ import App from './components/App';
 import configureStore from './redux/store';
 import { Provider as ReduxProvider } from 'react-redux';
 
-localStorage.removeItem('mpFormTabsState');
+//localStorage.removeItem('mpFormTabsState');
 
 const storedMpStateString = localStorage.getItem('mpFormTabsState');
-const storedDmgStateString = localStorage.getItem('dmgFormStateString');
+const storedDmgStateString = localStorage.getItem('dmgFormTabsState');
 
 const store = configureStore({
     mpFormTabs: storedMpStateString != null ? JSON.parse(storedMpStateString) : [],

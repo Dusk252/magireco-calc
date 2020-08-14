@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const TextInput = ({ name, label, defaultValue, validationObj }) => {
+const TextInput = ({ name, label, defaultValue, validationObj, ...otherProps }) => {
     const classes = useStyles();
     const { register, handleChange, errors } = useFormContext();
     return (
@@ -21,8 +21,15 @@ const TextInput = ({ name, label, defaultValue, validationObj }) => {
                 label={label ?? ''}
                 variant='outlined'
                 inputRef={register(validationObj ?? {})}
-                onChange={handleChange}
                 defaultValue={defaultValue}
+                onChange={handleChange}
+                onFocus={(e) => {
+                    if (e.target.value == 0) e.target.value = '';
+                }}
+                onBlur={(e) => {
+                    if (e.target.value == '') e.target.value = 0;
+                }}
+                {...otherProps}
             />
             <FormHelperText>
                 {errors[name] != null ? <span> {VALIDATION_MESSAGES[errors[name].type]}</span> : ''}
@@ -35,7 +42,8 @@ TextInput.propTypes = {
     name: PropTypes.string.isRequired,
     label: PropTypes.string,
     defaultValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    validationObj: PropTypes.object
+    validationObj: PropTypes.object,
+    otherProps: PropTypes.object
 };
 
 export default TextInput;

@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { updateMpFormTab, addMpFormTab, removeMpFormTab } from '../../../redux/actions/mpFormActions';
+import { updateMpFormTab, addMpFormTab, removeMpFormTab, updateMpFormResults } from '../../../redux/actions/mpFormActions';
 import { Tabs, AppBar } from '@material-ui/core';
 import TabItem from '../../tabs/TabItem';
 import TabPanel from '../../tabs/TabPanel';
@@ -10,7 +10,7 @@ import MpCalcTab from './MpCalcTab';
 
 let renderCount = 0;
 
-const MpCalcPage = ({ updateFormTab, addFormTab, removeFormTab, formTabsState }) => {
+const MpCalcPage = ({ updateFormTab, addFormTab, removeFormTab, updateFormResults, formTabsState }) => {
     const [currentTab, setCurrentTab] = useState(0);
     const [removingTab, setRemovingTab] = useState(false);
 
@@ -71,7 +71,12 @@ const MpCalcPage = ({ updateFormTab, addFormTab, removeFormTab, formTabsState })
                 formTabsState.map((tab, index) => {
                     return (
                         <TabPanel value={currentTab} index={index} key={index}>
-                            <MpCalcTab index={index} tabInfo={formTabsState[index]} onFormChange={handleFormChanges} />
+                            <MpCalcTab
+                                index={index}
+                                tabInfo={formTabsState[index]}
+                                onFormChange={handleFormChanges}
+                                onFormSubmit={updateFormResults}
+                            />
                         </TabPanel>
                     );
                 })}
@@ -83,6 +88,7 @@ MpCalcPage.propTypes = {
     updateFormTab: PropTypes.func.isRequired,
     addFormTab: PropTypes.func.isRequired,
     removeFormTab: PropTypes.func.isRequired,
+    updateFormResults: PropTypes.func.isRequired,
     formTabsState: PropTypes.array.isRequired
 };
 
@@ -93,7 +99,8 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = {
     updateFormTab: updateMpFormTab,
     addFormTab: addMpFormTab,
-    removeFormTab: removeMpFormTab
+    removeFormTab: removeMpFormTab,
+    updateFormResults: updateMpFormResults
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(MpCalcPage);

@@ -14,7 +14,7 @@ export const dealtDmgUp = (effectLvl) => {
 };
 
 //Accele MPUP
-export const accelMpUp = (effectLvl) => {
+export const acceleMpUp = (effectLvl) => {
     return effectLvl * 0.025 + 0.075;
 };
 

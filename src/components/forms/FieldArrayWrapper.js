@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useFormContext } from 'react-hook-form';
-import { Paper, InputLabel, Button, makeStyles } from '@material-ui/core';
+import { Paper, InputLabel, Button, makeStyles, Box } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -16,23 +16,27 @@ const FieldArrayWrapper = ({ name, label, fieldArray, children }) => {
     const { handleChange } = useFormContext();
     return (
         <Paper className={classes.root} variant='outlined'>
-            {label && (
-                <InputLabel id={name + '-label'} component='span'>
-                    {label}
-                </InputLabel>
-            )}
-            <Button
-                type='button'
-                variant='outlined'
-                color='primary'
-                onClick={() => {
-                    fieldArray.append();
-                    handleChange();
-                }}
-            >
-                Add
-            </Button>
-            {children}
+            <Box display='flex' justifyContent='space-between' alignItems='center'>
+                {label && (
+                    <Box fontSize='0.5rem'>
+                        <InputLabel id={name + '-label'} component='span' shrink={false}>
+                            {label}
+                        </InputLabel>
+                    </Box>
+                )}
+                <Button
+                    type='button'
+                    variant='outlined'
+                    color='primary'
+                    onClick={() => {
+                        fieldArray.append();
+                        handleChange();
+                    }}
+                >
+                    Add
+                </Button>
+            </Box>
+            <div>{children}</div>
         </Paper>
     );
 };

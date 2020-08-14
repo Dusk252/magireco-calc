@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const SelectInput = ({ name, label, defaultValue, options, validationObj }) => {
+const SelectInput = ({ name, label, defaultValue, options, validationObj, ...otherProps }) => {
     const classes = useStyles();
     const { handleChange, errors, control } = useFormContext();
     return (
@@ -29,6 +29,7 @@ const SelectInput = ({ name, label, defaultValue, options, validationObj }) => {
                                 handleChange();
                             }}
                             value={value ?? defaultValue}
+                            {...otherProps}
                         >
                             {options.map((opt, index) => {
                                 return (

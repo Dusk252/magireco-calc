@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useForm, useFieldArray, FormProvider } from 'react-hook-form';
 import PropTypes from 'prop-types';
-import { Container, Grid, Button, makeStyles } from '@material-ui/core';
+import { Container, Grid, Button, Typography, InputAdornment, makeStyles } from '@material-ui/core';
 import {
     FormSection,
     TextInput,
@@ -10,7 +10,8 @@ import {
     FieldArrayWrapper,
     FieldArrayElement
 } from '../../forms/FormComponents';
-import { mpUp as mpUpCalc, accelMpUp as accelMpUpCalc } from '../../../utils/memoriaCalcs';
+import { mpUp as mpUpMemoriaCalc, acceleMpUp as acceleMpUpMemoriaCalc } from '../../../utils/memoriaCalcs';
+import { mpUp as mpUpConnectCalc, acceleMpUp as acceleMpUpConnectCalc } from '../../../utils/connectCalcs';
 import { mpCalc } from '../../../utils/mpCalcs';
 import * as constants from '../../../constants/const';
 import * as mpConstants from '../../../constants/mpConst';
@@ -18,15 +19,18 @@ import ResultsDisplay from '../../ResultsDisplay';
 
 const MpFormInit = {
     mpUpPa: 0,
-    accelMpUpPa: 0,
+    acceleMpUpPa: 0,
     defMpUpPa: 0,
     chargeCount: 0,
-    accelCombo: false,
+    acceleBonus: false,
+    mirrors: false,
     charType: 'magia',
-    discType: 'accel',
+    discType: 'accele',
     discSlot: '1',
-    accelMpUpMemoria: [],
-    mpUpMemoria: []
+    acceleMpUpMemoria: [],
+    mpUpMemoria: [],
+    acceleMpUpConnects: [],
+    mpUpConnects: []
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -36,16 +40,41 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const MpCalcTab = ({ index, tabInfo, onFormChange }) => {
-    const formValues = tabInfo.formState ?? MpFormInit;
+const MpCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
+    //objects are merged so we can keep the user's localstorage even when new fields are added
+    const formValues = tabInfo.formState != null ? { ...MpFormInit, ...tabInfo.formState } : MpFormInit;
     const [isDirty, setDirty] = useState(false);
-    const [results, setResults] = useState(null);
 
     const classes = useStyles();
+
+    const { getValues, ...formMethods } = useForm({
+        defaultValues: formValues
+    });
 
     const handleChange = () => {
         setDirty(true);
     };
+    formMethods.handleChange = handleChange;
+
+    const acceleMpUpMemoria = useFieldArray({
+        control: formMethods.control,
+        name: 'acceleMpUpMemoria'
+    });
+
+    const mpUpMemoria = useFieldArray({
+        control: formMethods.control,
+        name: 'mpUpMemoria'
+    });
+
+    const acceleMpUpConnects = useFieldArray({
+        control: formMethods.control,
+        name: 'acceleMpUpConnects'
+    });
+
+    const mpUpConnects = useFieldArray({
+        control: formMethods.control,
+        name: 'acceleMpUpConnects'
+    });
 
     const onSubmit = (data) => {
         calculateResults(data);
@@ -63,21 +92,6 @@ const MpCalcTab = ({ index, tabInfo, onFormChange }) => {
         }
     }, [isDirty, getValues, onFormChange, index]);
 
-    const { getValues, ...formMethods } = useForm({
-        defaultValues: formValues
-    });
-    formMethods.handleChange = handleChange;
-
-    const accelMpUpMemoria = useFieldArray({
-        control: formMethods.control,
-        name: 'accelMpUpMemoria'
-    });
-
-    const mpUpMemoria = useFieldArray({
-        control: formMethods.control,
-        name: 'mpUpMemoria'
-    });
-
     const reduceIfExists = (array, operation) => {
         return array == null
             ? 0
@@ -87,41 +101,51 @@ const MpCalcTab = ({ index, tabInfo, onFormChange }) => {
     };
 
     const calculateResults = (data) => {
-        const accelMpUpPa = Number(data.accelMpUpPa) * 0.01 + reduceIfExists(data.accelMpUpMemoria, accelMpUpCalc);
-        const mpUpPa = Number(data.mpUpPa) * 0.01 + reduceIfExists(data.mpUpMemoria, mpUpCalc);
+        const acceleMpUpPa =
+            Number(data.acceleMpUpPa) * 0.01 +
+            reduceIfExists(data.acceleMpUpMemoria, acceleMpUpMemoriaCalc) +
+            reduceIfExists(data.acceleMpUpConnects, acceleMpUpConnectCalc);
+        const mpUpPa =
+            Number(data.mpUpPa) * 0.01 +
+            reduceIfExists(data.mpUpMemoria, mpUpMemoriaCalc) +
+            reduceIfExists(data.mpUpConnects, mpUpConnectCalc);
         const mpTotal = mpCalc(
-            data.accelCombo,
+            data.acceleBonus,
+            data.mirrors,
             data.discSlot,
             data.discType,
             data.charType,
             mpUpPa,
-            accelMpUpPa,
+            acceleMpUpPa,
             Number(data.chargeCount)
         );
-        setResults({
-            interimResults: [
-                {
-                    label: 'AccelMPUP倍率',
-                    res: {
-                        value: accelMpUpPa * 100,
-                        postfix: '%'
+        onFormSubmit(
+            {
+                interimResults: [
+                    {
+                        label: 'Accel MPUP倍率',
+                        res: {
+                            value: acceleMpUpPa * 100,
+                            postfix: '%'
+                        }
+                    },
+                    {
+                        label: 'MP獲得量UP倍率',
+                        res: {
+                            value: mpUpPa * 100,
+                            postfix: '%'
+                        }
                     }
-                },
-                {
-                    label: 'MP獲得量UP倍率',
+                ],
+                finalResult: {
+                    label: '合計獲得MP',
                     res: {
-                        value: mpUpPa * 100,
-                        postfix: '%'
+                        value: mpTotal
                     }
                 }
-            ],
-            finalResult: {
-                label: '合計獲得MP',
-                res: {
-                    value: mpTotal
-                }
-            }
-        });
+            },
+            index
+        );
     };
 
     return (
@@ -131,27 +155,18 @@ const MpCalcTab = ({ index, tabInfo, onFormChange }) => {
                     <FormSection>
                         <Grid container>
                             <Grid item xs={4}>
-                                <SelectInput
-                                    name='discType'
-                                    label='ディスク種類'
-                                    options={Object.keys(mpConstants.INITIAL_VALUES).map((key) => ({
-                                        value: key,
-                                        text: mpConstants.INITIAL_VALUES[key].text
-                                    }))}
-                                />
+                                <SelectInput name='discType' label='ディスク種類' options={mpConstants.DISC_TYPE_DROPDOWN} />
                             </Grid>
                             <Grid item xs={4}>
-                                <SelectInput name='discSlot' label='ディスク位置' options={mpConstants.DISC_SLOT_DROPDOWN} />
+                                <SelectInput name='discSlot' label='ディスク位置' options={constants.DISC_SLOT_DROPDOWN} />
                             </Grid>
                             <Grid item xs={4}>
                                 <SelectInput
                                     name='charType'
                                     label='キャラクタータイプ'
-                                    options={mpConstants.CHAR_TYPES_DROPDOWN}
+                                    options={mpConstants.CHAR_TYPE_DROPDOWN}
                                 />
                             </Grid>
-                        </Grid>
-                        <Grid container>
                             <Grid item xs={4}>
                                 <TextInput
                                     name='chargeCount'
@@ -165,49 +180,34 @@ const MpCalcTab = ({ index, tabInfo, onFormChange }) => {
                                 />
                             </Grid>
                             <Grid item xs={4}>
-                                <CheckboxInput name='accelCombo' label='Accelコンボ' />
-                            </Grid>
-                        </Grid>
-                        <Grid container>
-                            <Grid item xs={4}>
-                                <TextInput
-                                    name='mpUpPa'
-                                    label='MP獲得量UP倍率'
-                                    validationObj={{
-                                        required: true,
-                                        validate: {
-                                            isNumber: (value) => !isNaN(Number(value))
-                                        }
-                                    }}
-                                />
+                                <CheckboxInput name='acceleBonus' label='初手Acceleボーナス' />
                             </Grid>
                             <Grid item xs={4}>
-                                <TextInput
-                                    name='accelMpUpPa'
-                                    label='AccelMPUP倍率'
-                                    validationObj={{
-                                        required: true,
-                                        validate: {
-                                            isNumber: (value) => !isNaN(Number(value))
-                                        }
-                                    }}
-                                />
+                                <CheckboxInput name='mirrors' label='ミラーズ' />
                             </Grid>
                         </Grid>
                     </FormSection>
-                    <FormSection label='メモリアを追加'>
-                        <FieldArrayWrapper name='accelMpUpMemoria' label='AccelMPUPメモリア' fieldArray={accelMpUpMemoria}>
-                            {accelMpUpMemoria.fields.map((field, index) => (
-                                <FieldArrayElement key={index} fieldArray={accelMpUpMemoria} index={index}>
+                    <FormSection
+                        label='メモリア'
+                        collapse
+                        open={acceleMpUpMemoria.fields.length > 0 || mpUpMemoria.fields.length > 0}
+                    >
+                        <FieldArrayWrapper
+                            name='acceleMpUpMemoria'
+                            label='Accel MPUPメモリア'
+                            fieldArray={acceleMpUpMemoria}
+                        >
+                            {acceleMpUpMemoria.fields.map((field, index) => (
+                                <FieldArrayElement key={index} fieldArray={acceleMpUpMemoria} index={index}>
                                     <SelectInput
-                                        name={`accelMpUpMemoria[${index}].amount`}
+                                        name={`acceleMpUpMemoria[${index}].amount`}
                                         options={Array.from(Array(10), (_, i) => {
                                             return {
                                                 value: (i + 1).toString(),
-                                                text: 'AccelMPUP' + constants.ROMAN_NUMERALS[i + 1]
+                                                text: 'Accel MPUP' + constants.ROMAN_NUMERALS[i + 1]
                                             };
                                         })}
-                                        defaultValue={1}
+                                        defaultValue={'1'}
                                     />
                                 </FieldArrayElement>
                             ))}
@@ -223,18 +223,97 @@ const MpCalcTab = ({ index, tabInfo, onFormChange }) => {
                                                 text: 'MP獲得量UP' + constants.ROMAN_NUMERALS[i + 1]
                                             };
                                         })}
-                                        defaultValue={1}
+                                        defaultValue={'1'}
                                     />
                                 </FieldArrayElement>
                             ))}
                         </FieldArrayWrapper>
+                    </FormSection>
+                    <FormSection
+                        label='コネクト'
+                        collapse
+                        open={acceleMpUpConnects.fields.length > 0 || mpUpConnects.fields.length > 0}
+                    >
+                        <FieldArrayWrapper
+                            name='acceleMpUpConnects'
+                            label='Accel MPUPコネクト'
+                            fieldArray={acceleMpUpConnects}
+                        >
+                            {acceleMpUpConnects.fields.map((field, index) => (
+                                <FieldArrayElement key={index} fieldArray={acceleMpUpConnects} index={index}>
+                                    <SelectInput
+                                        name={`acceleMpUpConnects[${index}].amount`}
+                                        options={Array.from(Array(10), (_, i) => {
+                                            return {
+                                                value: (i + 1).toString(),
+                                                text: 'Accel MPUP' + constants.ROMAN_NUMERALS[i + 1]
+                                            };
+                                        })}
+                                        defaultValue={'1'}
+                                    />
+                                </FieldArrayElement>
+                            ))}
+                        </FieldArrayWrapper>
+                        <FieldArrayWrapper name='mpUpConnects' label='MP獲得量UPコネクト' fieldArray={mpUpConnects}>
+                            {mpUpConnects.fields.map((field, index) => (
+                                <FieldArrayElement key={index} fieldArray={mpUpConnects} index={index}>
+                                    <SelectInput
+                                        name={`mpUpConnects[${index}].amount`}
+                                        options={Array.from(Array(10), (_, i) => {
+                                            return {
+                                                value: (i + 1).toString(),
+                                                text: 'MP獲得量UP' + constants.ROMAN_NUMERALS[i + 1]
+                                            };
+                                        })}
+                                        defaultValue={'1'}
+                                    />
+                                </FieldArrayElement>
+                            ))}
+                        </FieldArrayWrapper>
+                    </FormSection>
+                    <FormSection label='倍率としての入力'>
+                        <Typography variant='body2'>
+                            ※メモリアやコネクトを入力した場合、この数字がそれで計算された倍率に足されます。
+                        </Typography>
+                        <Grid container>
+                            <Grid item xs={4}>
+                                <TextInput
+                                    name='mpUpPa'
+                                    label='MP獲得量UP倍率'
+                                    validationObj={{
+                                        required: true,
+                                        validate: {
+                                            isNumber: (value) => !isNaN(Number(value))
+                                        }
+                                    }}
+                                    InputProps={{
+                                        endAdornment: <InputAdornment position='end'>%</InputAdornment>
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={4}>
+                                <TextInput
+                                    name='acceleMpUpPa'
+                                    label='AccelMPUP倍率'
+                                    validationObj={{
+                                        required: true,
+                                        validate: {
+                                            isNumber: (value) => !isNaN(Number(value))
+                                        }
+                                    }}
+                                    InputProps={{
+                                        endAdornment: <InputAdornment position='end'>%</InputAdornment>
+                                    }}
+                                />
+                            </Grid>
+                        </Grid>
                     </FormSection>
                     <Button className={classes.root} type='submit' color='primary' variant='contained'>
                         Submit
                     </Button>
                 </form>
             </FormProvider>
-            {results && <ResultsDisplay {...results} />}
+            {tabInfo.results && <ResultsDisplay {...tabInfo.results} />}
         </Container>
     );
 };
@@ -242,7 +321,8 @@ const MpCalcTab = ({ index, tabInfo, onFormChange }) => {
 MpCalcTab.propTypes = {
     index: PropTypes.any.isRequired,
     tabInfo: PropTypes.object.isRequired,
-    onFormChange: PropTypes.func.isRequired
+    onFormChange: PropTypes.func.isRequired,
+    onFormSubmit: PropTypes.func.isRequired
 };
 
 export default MpCalcTab;
