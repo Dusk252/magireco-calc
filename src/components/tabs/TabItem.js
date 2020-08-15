@@ -6,6 +6,7 @@ import CloseIcon from '@material-ui/icons/Close';
 const useStyles = makeStyles((theme) => ({
     tab: {
         textAlign: 'left',
+        height: '48px',
         '&& span': {
             alignItems: 'flex-start'
         }

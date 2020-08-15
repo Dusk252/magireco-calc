@@ -81,7 +81,6 @@ export const MAGIA_COMBO_DROPDOWN = [
     }
 ];
 
-//TO DO: mirrors
 export const DISC_MAP = {
     default: {
         accele: 1.0,
@@ -141,4 +140,39 @@ export const ZOKUSEI_KYOUKA_MAGIA_MAP = {
     quest: 3,
     mirrors: 3,
     kimochisen: 3.1
+};
+
+export const KYOUKA_LIMITS = {
+    atkHosei: {
+        min: 0.05,
+        max: 2
+    },
+    defHosei: {
+        min: 0.05,
+        max: 2
+    },
+    magiaHosei: {
+        min: 0.05,
+        max: 2
+    },
+    doppelHosei: {
+        min: -0.95,
+        max: 1
+    },
+    dmgUpHosei: {
+        min: -0.95,
+        max: 1
+    },
+    blastDmgUpHosei: {
+        min: -0.95,
+        max: 1
+    },
+    chargeDmgUpHosei: {
+        min: -0.95,
+        max: 1
+    },
+    totalDmgHosei: {
+        min: 0.3,
+        max: 3
+    }
 };

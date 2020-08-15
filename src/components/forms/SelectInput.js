@@ -18,7 +18,7 @@ const SelectInput = ({ name, label, defaultValue, options, validationObj, varian
         <FormControl className={classes.root} fullWidth>
             <Controller
                 render={({ onChange, onBlur, value }) => (
-                    <FormControl variant={variant} component='fieldset'>
+                    <FormControl variant={variant} component='fieldset' {...otherProps}>
                         {label && <InputLabel id={name + '-label'}>{label}</InputLabel>}
                         <Select
                             labelId={name + '-label'}
@@ -29,7 +29,6 @@ const SelectInput = ({ name, label, defaultValue, options, validationObj, varian
                                 handleChange();
                             }}
                             value={value ?? defaultValue}
-                            {...otherProps}
                         >
                             {options.map((opt, index) => {
                                 return (

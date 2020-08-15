@@ -16,11 +16,11 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const CheckboxInput = ({ name, label, defaultValue, validationObj }) => {
+const CheckboxInput = ({ name, label, defaultValue, validationObj, ...otherProps }) => {
     const classes = useStyles();
     const { handleChange, errors, control } = useFormContext();
     return (
-        <FormControl className={(classes.root, classes.checkbox)} fullWidth>
+        <FormControl className={(classes.root, classes.checkbox)} fullWidth {...otherProps}>
             <Controller
                 render={({ onChange, onBlur, value }) => (
                     <FormControlLabel

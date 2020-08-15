@@ -11,16 +11,19 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const FormSection = ({ label, children, collapse = false, open = false }) => {
+const FormSection = ({ title, subtitle, children, collapse = false, open = false }) => {
     const classes = useStyles();
     const [isOpen, setOpen] = useState(open);
     return (
         <Paper className={classes.root} variant='outlined'>
             <Box display='flex' flexDirection='row' flexWrap='nowrap' justifyContent='space-between' alignItems='center'>
-                {label && (
-                    <Typography id={name + '-label'} variant='subtitle1'>
-                        {label}
-                    </Typography>
+                {title && (
+                    <Box {...(collapse ? {} : { mb: 4 })}>
+                        <Typography id={name + '-label'} variant='subtitle1'>
+                            {title}
+                        </Typography>
+                        {subtitle && <Typography variant='body2'>{subtitle}</Typography>}
+                    </Box>
                 )}
                 {collapse && (
                     <IconButton
@@ -44,7 +47,8 @@ const FormSection = ({ label, children, collapse = false, open = false }) => {
 };
 
 FormSection.propTypes = {
-    label: PropTypes.string,
+    title: PropTypes.string,
+    subtitle: PropTypes.string,
     children: PropTypes.node.isRequired,
     collapse: PropTypes.bool,
     open: PropTypes.bool

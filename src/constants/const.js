@@ -37,7 +37,7 @@ export const DISC_SLOT_DROPDOWN = [
 ];
 
 export const VALIDATION_MESSAGES = {
-    required: 'Please fill in the field.',
-    isNumber: 'The input has to be a number.',
-    isInteger: 'The input has to be an integer.'
+    required: 'このフィールドは入力必須です。',
+    isNumber: '数字を入力してください。',
+    isInteger: '整数を入力してください。'
 };

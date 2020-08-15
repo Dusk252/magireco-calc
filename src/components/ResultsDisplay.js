@@ -15,7 +15,9 @@ const round = (value, precision) => {
     return Math.round(value * multiplier) / multiplier;
 };
 
-const ResultsDisplay = ({ interimResults, finalResult }) => {
+const defaultPrecision = 2;
+
+const ResultsDisplay = ({ interimResults, finalResults }) => {
     const classes = useStyles();
     return (
         <Paper className={classes.paper} variant='outlined'>
@@ -26,49 +28,82 @@ const ResultsDisplay = ({ interimResults, finalResult }) => {
             {interimResults != null ? (
                 <>
                     <Box py={2}>
-                        {interimResults.map((res, index) => (
-                            <Grid key={index} container>
-                                <Grid item xs={6}>
-                                    <Typography variant='subtitle1' component='div'>
-                                        {res.label}:
-                                    </Typography>
+                        {interimResults.map((res, index) => {
+                            let roundedRes = round(res.value, res.precision ?? defaultPrecision);
+                            let resColor = 'white';
+                            if (res.limits != null) {
+                                resColor =
+                                    roundedRes === res.limits.min || roundedRes === res.limits.max
+                                        ? 'orange'
+                                        : roundedRes > res.limits.max || roundedRes < res.limits.min
+                                        ? 'red'
+                                        : resColor;
+                            }
+                            return (
+                                <Grid key={index} container>
+                                    <Grid item xs={6}>
+                                        <Typography variant='subtitle1' component='div'>
+                                            {res.label}{' '}
+                                            {res.limits != null ? (
+                                                <Typography variant='body2' component='span'>
+                                                    {'(' +
+                                                        res.limits.min +
+                                                        res.postfix +
+                                                        ' - ' +
+                                                        res.limits.max +
+                                                        res.postfix +
+                                                        ')'}
+                                                </Typography>
+                                            ) : (
+                                                ''
+                                            )}
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <Box color={resColor}>
+                                            <Typography variant='body1' component='div' align='right'>
+                                                {roundedRes}
+                                                {res.postfix}
+                                            </Typography>
+                                        </Box>
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs={6}>
-                                    <Typography variant='body1' component='div' align='right'>
-                                        {round(res.res.value, 1)}
-                                        {res.res.postfix}
-                                    </Typography>
-                                </Grid>
-                            </Grid>
-                        ))}
+                            );
+                        })}
                     </Box>
                     <Divider component='div' />
                 </>
             ) : (
                 ''
             )}
-            <Box pt={2}>
-                <Grid container>
-                    <Grid item xs={6}>
-                        <Typography id='final-result-label' variant='subtitle1' component='div'>
-                            {finalResult.label}
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                        <Typography id='final-result-label' variant='subtitle1' component='div' align='right'>
-                            {round(finalResult.res.value, 1)}
-                            {finalResult.res.postfix}
-                        </Typography>
-                    </Grid>
-                </Grid>
-            </Box>
+            {finalResults != null ? (
+                <Box pt={2}>
+                    {finalResults.map((res, index) => (
+                        <Grid key={index} container>
+                            <Grid item xs={6}>
+                                <Typography id='final-result-label' variant='subtitle1' component='div'>
+                                    {res.label}
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Typography id='final-result-label' variant='subtitle1' component='div' align='right'>
+                                    {round(res.value, res.precision ?? defaultPrecision)}
+                                    {res.postfix}
+                                </Typography>
+                            </Grid>
+                        </Grid>
+                    ))}
+                </Box>
+            ) : (
+                ''
+            )}
         </Paper>
     );
 };
 
 ResultsDisplay.propTypes = {
     interimResults: PropTypes.array,
-    finalResult: PropTypes.object.isRequired
+    finalResults: PropTypes.array.isRequired
 };
 
 export default ResultsDisplay;

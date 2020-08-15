@@ -229,6 +229,7 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                       data.magiaCombo,
                       magiaDmgHosei,
                       data.zokuseiKankei,
+                      data.zokuseiKyoukaMagia,
                       data.joutaiIjou,
                       Number(data.taiseiBairitsuPa),
                       dmgHosei
@@ -260,65 +261,79 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                 interimResults: [
                     {
                         label: '実行ATK',
-                        res: {
-                            value: jikkouAtk
-                        }
+                        value: jikkouAtk
                     },
                     {
                         label: '実行DEF',
-                        res: {
-                            value: jikkouDef
-                        }
+                        value: jikkouDef
                     },
                     {
                         label: '攻撃力補正',
-                        res: {
-                            value: atkHosei * 100,
-                            postfix: '%'
+                        value: atkHosei * 100,
+                        postfix: '%',
+                        limits: {
+                            min: dmgConstants.KYOUKA_LIMITS.atkHosei.min * 100,
+                            max: dmgConstants.KYOUKA_LIMITS.atkHosei.max * 100
                         }
                     },
                     {
                         label: '防御力補正',
-                        res: {
-                            value: defHosei * 100,
-                            postfix: '%'
+                        value: defHosei * 100,
+                        postfix: '%',
+                        limits: {
+                            min: dmgConstants.KYOUKA_LIMITS.defHosei.min * 100,
+                            max: dmgConstants.KYOUKA_LIMITS.defHosei.max * 100
                         }
                     },
                     {
                         label: 'マギアダメージ補正',
-                        res: {
-                            value: magiaDmgHosei * 100,
-                            postfix: '%'
+                        value: magiaDmgHosei * 100,
+                        postfix: '%',
+                        limits: {
+                            min: dmgConstants.KYOUKA_LIMITS.magiaHosei.min * 100,
+                            max: dmgConstants.KYOUKA_LIMITS.magiaHosei.max * 100
                         }
                     },
                     {
                         label: 'ドッペルダメージ補正',
-                        res: {
-                            value: doppelDmgHosei * 100,
-                            postfix: '%'
+                        value: doppelDmgHosei * 100,
+                        postfix: '%',
+                        limits: {
+                            min: dmgConstants.KYOUKA_LIMITS.doppelHosei.min * 100,
+                            max: dmgConstants.KYOUKA_LIMITS.doppelHosei.max * 100
                         }
                     },
                     {
                         label: '与えるダメージ補正',
-                        res: {
-                            value: dmgUpHosei * 100,
-                            postfix: '%'
+                        value: dmgUpHosei * 100,
+                        postfix: '%',
+                        limits: {
+                            min: dmgConstants.KYOUKA_LIMITS.dmgUpHosei.min * 100,
+                            max: dmgConstants.KYOUKA_LIMITS.dmgUpHosei.max * 100
                         }
                     },
                     {
                         label: '補正係数',
-                        res: {
-                            value: dmgHosei * 100,
-                            postfix: '%'
+                        value: dmgHosei * 100,
+                        postfix: '%',
+                        limits: {
+                            min: dmgConstants.KYOUKA_LIMITS.totalDmgHosei.min * 100,
+                            max: dmgConstants.KYOUKA_LIMITS.totalDmgHosei.max * 100
                         }
                     }
                 ],
-                finalResult: {
-                    label: '最終ダメージ',
-                    res: {
-                        value: finalDamage.max
+                finalResults: [
+                    {
+                        label: '最終ダメージ MIN',
+                        value: finalDamage.min,
+                        precision: 0
+                    },
+                    {
+                        label: '最終ダメージ MAX',
+                        value: finalDamage.max,
+                        precision: 0
                     }
-                }
+                ]
             },
             index
         );
@@ -326,9 +341,20 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
 
     return (
         <Container maxWidth='md'>
+            <Box mt={3} mb={-1} mx={'auto'} pb={2} borderBottom='1px solid rgba(255, 255, 255, 0.3)'>
+                <Box display='inline-block' borderRight='1px solid rgba(255, 255, 255, 0.3)' pr={3} mr={3}>
+                    <Typography variant='h4' component='span'>
+                        マギレコダメージ計算
+                    </Typography>
+                </Box>
+                <Typography variant='h5' component='span'>
+                    {tabInfo.title}
+                </Typography>
+            </Box>
+
             <FormProvider {...formMethods}>
                 <form onSubmit={formMethods.handleSubmit(onSubmit)} autoComplete='off'>
-                    <FormSection>
+                    <FormSection title='基本情報'>
                         <Grid container>
                             <Grid item xs={4} md={3}>
                                 <TextInput
@@ -339,6 +365,9 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                         validate: {
                                             isInteger: (value) => Number.isInteger(Number(value))
                                         }
+                                    }}
+                                    inputProps={{
+                                        maxLength: 5
                                     }}
                                 />
                             </Grid>
@@ -355,6 +384,9 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                     InputProps={{
                                         endAdornment: <InputAdornment position='end'>%</InputAdornment>
                                     }}
+                                    inputProps={{
+                                        maxLength: 2
+                                    }}
                                 />
                             </Grid>
                             <Grid item xs={4} md={3}>
@@ -366,6 +398,9 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                         validate: {
                                             isInteger: (value) => Number.isInteger(Number(value))
                                         }
+                                    }}
+                                    inputProps={{
+                                        maxLength: 4
                                     }}
                                 />
                             </Grid>
@@ -379,6 +414,9 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                             isInteger: (value) => Number.isInteger(Number(value))
                                         }
                                     }}
+                                    inputProps={{
+                                        maxLength: 4
+                                    }}
                                 />
                             </Grid>
                             <Grid item xs={4} md={3}>
@@ -390,6 +428,9 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                         validate: {
                                             isInteger: (value) => Number.isInteger(Number(value))
                                         }
+                                    }}
+                                    inputProps={{
+                                        maxLength: 5
                                     }}
                                 />
                             </Grid>
@@ -406,6 +447,9 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                     InputProps={{
                                         endAdornment: <InputAdornment position='end'>%</InputAdornment>
                                     }}
+                                    inputProps={{
+                                        maxLength: 2
+                                    }}
                                 />
                             </Grid>
                             <Grid item xs={4} md={3}>
@@ -418,6 +462,9 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                             isInteger: (value) => Number.isInteger(Number(value))
                                         }
                                     }}
+                                    inputProps={{
+                                        maxLength: 4
+                                    }}
                                 />
                             </Grid>
                             <Grid item xs={4} md={3}>
@@ -429,6 +476,9 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                         validate: {
                                             isInteger: (value) => Number.isInteger(Number(value))
                                         }
+                                    }}
+                                    inputProps={{
+                                        maxLength: 4
                                     }}
                                 />
                             </Grid>
@@ -455,6 +505,9 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                     }}
                                     InputProps={{
                                         endAdornment: <InputAdornment position='end'>%</InputAdornment>
+                                    }}
+                                    inputProps={{
+                                        maxLength: 2
                                     }}
                                     disabled={watchDiscType === 'magia'}
                                 />
@@ -487,9 +540,13 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                             isInteger: (value) => Number.isInteger(Number(value))
                                         }
                                     }}
+                                    inputProps={{
+                                        maxLength: 2
+                                    }}
+                                    disabled={watchDiscType === 'magia'}
                                 />
                             </Grid>
-                            <Grid item xs={6} md={3}>
+                            <Grid item xs={4} md={3}>
                                 <SelectInput
                                     name='discSlot'
                                     label='ディスク位置'
@@ -499,11 +556,19 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                     showErrors
                                 />
                             </Grid>
-                            <Grid item xs={6} md={3}>
-                                <CheckboxInput name='puellaCombo' label='ピュエラコンボ' />
+                            <Grid item xs={4} md={3}>
+                                <CheckboxInput
+                                    name='puellaCombo'
+                                    label='ピュエラコンボ'
+                                    disabled={watchDiscType === 'magia'}
+                                />
                             </Grid>
-                            <Grid item xs={6} md={3}>
-                                <CheckboxInput name='blastCombo' label='ブラストコンボ' />
+                            <Grid item xs={4} md={3}>
+                                <CheckboxInput
+                                    name='blastCombo'
+                                    label='ブラストコンボ'
+                                    disabled={watchDiscType !== 'blast'}
+                                />
                             </Grid>
                             <Grid item xs={8} md={6}>
                                 <RadioButtonInput name='questType' options={dmgConstants.QUEST_TYPE_OPTIONS} />
@@ -512,7 +577,7 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                 <CheckboxInput name='joutaiIjou' label='特定状態異常マス' />
                             </Grid>
                             <Grid item xs={4} md={3}>
-                                <CheckboxInput name='isCrit' label='クリティカル' />
+                                <CheckboxInput name='isCrit' label='クリティカル' disabled={watchDiscType === 'magia'} />
                             </Grid>
                         </Grid>
                         <Collapse in={watchDiscType === 'magia'} timeout='auto'>
@@ -542,6 +607,9 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                         InputProps={{
                                             endAdornment: <InputAdornment position='end'>%</InputAdornment>
                                         }}
+                                        inputProps={{
+                                            maxLength: 4
+                                        }}
                                     />
                                 </Grid>
                                 <Grid item xs={6} md={3}>
@@ -560,7 +628,7 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                         </Collapse>
                     </FormSection>
                     <FormSection
-                        label='メモリア'
+                        title='メモリア'
                         collapse
                         open={[
                             atkHoseiMemoria,
@@ -733,7 +801,7 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                         </FieldArrayWrapper>
                     </FormSection>
                     <FormSection
-                        label='コネクト'
+                        title='コネクト'
                         collapse
                         open={[
                             atkHoseiConnect,
@@ -867,12 +935,10 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                             ))}
                         </FieldArrayWrapper>
                     </FormSection>
-                    <FormSection label='倍率としての入力'>
-                        <Box mb={3}>
-                            <Typography variant='body2'>
-                                ※メモリアやコネクトを入力した場合、この数字がそれで計算された倍率に足されます。
-                            </Typography>
-                        </Box>
+                    <FormSection
+                        title='倍率としての入力'
+                        subtitle='※メモリアやコネクトを入力した場合、この数字がそれで計算された倍率に足されます。'
+                    >
                         <Grid container>
                             <Grid item xs={4} md={3}>
                                 <TextInput
@@ -886,6 +952,9 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                     }}
                                     InputProps={{
                                         endAdornment: <InputAdornment position='end'>%</InputAdornment>
+                                    }}
+                                    inputProps={{
+                                        maxLength: 3
                                     }}
                                 />
                             </Grid>
@@ -902,6 +971,9 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                     InputProps={{
                                         endAdornment: <InputAdornment position='end'>%</InputAdornment>
                                     }}
+                                    inputProps={{
+                                        maxLength: 3
+                                    }}
                                 />
                             </Grid>
                             <Grid item xs={4} md={3}>
@@ -916,6 +988,9 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                     }}
                                     InputProps={{
                                         endAdornment: <InputAdornment position='end'>%</InputAdornment>
+                                    }}
+                                    inputProps={{
+                                        maxLength: 3
                                     }}
                                 />
                             </Grid>
@@ -932,6 +1007,9 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                     InputProps={{
                                         endAdornment: <InputAdornment position='end'>%</InputAdornment>
                                     }}
+                                    inputProps={{
+                                        maxLength: 3
+                                    }}
                                 />
                             </Grid>
                             <Grid item xs={4} md={3}>
@@ -946,6 +1024,9 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                     }}
                                     InputProps={{
                                         endAdornment: <InputAdornment position='end'>%</InputAdornment>
+                                    }}
+                                    inputProps={{
+                                        maxLength: 3
                                     }}
                                 />
                             </Grid>
@@ -962,6 +1043,9 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                     InputProps={{
                                         endAdornment: <InputAdornment position='end'>%</InputAdornment>
                                     }}
+                                    inputProps={{
+                                        maxLength: 3
+                                    }}
                                 />
                             </Grid>
                             <Grid item xs={4} md={3}>
@@ -976,6 +1060,9 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                     }}
                                     InputProps={{
                                         endAdornment: <InputAdornment position='end'>%</InputAdornment>
+                                    }}
+                                    inputProps={{
+                                        maxLength: 3
                                     }}
                                 />
                             </Grid>
@@ -992,6 +1079,9 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                     InputProps={{
                                         endAdornment: <InputAdornment position='end'>%</InputAdornment>
                                     }}
+                                    inputProps={{
+                                        maxLength: 3
+                                    }}
                                 />
                             </Grid>
                             <Grid item xs={4} md={3}>
@@ -1007,6 +1097,9 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                     InputProps={{
                                         endAdornment: <InputAdornment position='end'>%</InputAdornment>
                                     }}
+                                    inputProps={{
+                                        maxLength: 3
+                                    }}
                                 />
                             </Grid>
                             <Grid item xs={4} md={3}>
@@ -1021,6 +1114,9 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                     }}
                                     InputProps={{
                                         endAdornment: <InputAdornment position='end'>%</InputAdornment>
+                                    }}
+                                    inputProps={{
+                                        maxLength: 3
                                     }}
                                 />
                             </Grid>

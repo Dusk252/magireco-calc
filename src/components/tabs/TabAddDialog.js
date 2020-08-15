@@ -56,6 +56,7 @@ const TabAddDialog = ({ onAddTab }) => {
                             label='Title'
                             type='text'
                             fullWidth
+                            inputProps={{ maxLength: 50 }}
                         />
                     </DialogContent>
                     <DialogActions>

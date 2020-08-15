@@ -1,7 +1,7 @@
 import React from 'react';
-import { useForm, useFieldArray, FormProvider } from 'react-hook-form';
+import { useForm, useWatch, useFieldArray, FormProvider } from 'react-hook-form';
 import PropTypes from 'prop-types';
-import { Container, Grid, Button, Typography, InputAdornment, makeStyles } from '@material-ui/core';
+import { Container, Grid, Button, Box, Typography, InputAdornment, makeStyles } from '@material-ui/core';
 import {
     FormSection,
     TextInput,
@@ -54,6 +54,12 @@ const MpCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
         onFormChange(formMethods.getValues(), index);
     };
     formMethods.handleChange = handleChange;
+
+    const watchDiscInfo = useWatch({
+        name: ['discType', 'discSlot'],
+        control: formMethods.control,
+        defaultValue: formValues.discType
+    });
 
     const acceleMpUpMemoria = useFieldArray({
         control: formMethods.control,
@@ -111,25 +117,22 @@ const MpCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                 interimResults: [
                     {
                         label: 'Accel MPUP倍率',
-                        res: {
-                            value: acceleMpUpPa * 100,
-                            postfix: '%'
-                        }
+                        value: acceleMpUpPa * 100,
+                        postfix: '%'
                     },
                     {
                         label: 'MP獲得量UP倍率',
-                        res: {
-                            value: mpUpPa * 100,
-                            postfix: '%'
-                        }
+                        value: mpUpPa * 100,
+                        postfix: '%'
                     }
                 ],
-                finalResult: {
-                    label: '合計獲得MP',
-                    res: {
-                        value: mpTotal
+                finalResults: [
+                    {
+                        label: '合計獲得MP',
+                        value: mpTotal,
+                        precision: 1
                     }
-                }
+                ]
             },
             index
         );
@@ -137,9 +140,20 @@ const MpCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
 
     return (
         <Container maxWidth='md'>
+            <Box mt={3} mb={-1} mx={'auto'} pb={2} borderBottom='1px solid rgba(255, 255, 255, 0.3)'>
+                <Box display='inline-block' borderRight='1px solid rgba(255, 255, 255, 0.3)' pr={3} mr={3}>
+                    <Typography variant='h4' component='span'>
+                        マギレコMP計算
+                    </Typography>
+                </Box>
+                <Typography variant='h5' component='span'>
+                    {tabInfo.title}
+                </Typography>
+            </Box>
+
             <FormProvider {...formMethods}>
                 <form onSubmit={formMethods.handleSubmit(onSubmit)} autoComplete='off'>
-                    <FormSection>
+                    <FormSection title='基本情報'>
                         <Grid container>
                             <Grid item xs={4}>
                                 <SelectInput
@@ -178,10 +192,17 @@ const MpCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                             isInteger: (value) => Number.isInteger(Number(value))
                                         }
                                     }}
+                                    inputProps={{
+                                        maxLength: 2
+                                    }}
                                 />
                             </Grid>
                             <Grid item xs={4}>
-                                <CheckboxInput name='acceleBonus' label='初手Acceleボーナス' />
+                                <CheckboxInput
+                                    name='acceleBonus'
+                                    label='初手Acceleボーナス'
+                                    disabled={watchDiscInfo.discType !== 'accele' && watchDiscInfo.discSlot == 1}
+                                />
                             </Grid>
                             <Grid item xs={4}>
                                 <CheckboxInput name='mirrors' label='ミラーズ' />
@@ -189,7 +210,7 @@ const MpCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                         </Grid>
                     </FormSection>
                     <FormSection
-                        label='メモリア'
+                        title='メモリア'
                         collapse
                         open={acceleMpUpMemoria.fields.length > 0 || mpUpMemoria.fields.length > 0}
                     >
@@ -227,7 +248,7 @@ const MpCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                         </FieldArrayWrapper>
                     </FormSection>
                     <FormSection
-                        label='コネクト'
+                        title='コネクト'
                         collapse
                         open={acceleMpUpConnects.fields.length > 0 || mpUpConnects.fields.length > 0}
                     >
@@ -264,10 +285,10 @@ const MpCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                             ))}
                         </FieldArrayWrapper>
                     </FormSection>
-                    <FormSection label='倍率としての入力'>
-                        <Typography variant='body2'>
-                            ※メモリアやコネクトを入力した場合、この数字がそれで計算された倍率に足されます。
-                        </Typography>
+                    <FormSection
+                        title='倍率としての入力'
+                        subtitle='※メモリアやコネクトを入力した場合、この数字がそれで計算された倍率に足されます。'
+                    >
                         <Grid container>
                             <Grid item xs={4}>
                                 <TextInput
@@ -281,6 +302,9 @@ const MpCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                     }}
                                     InputProps={{
                                         endAdornment: <InputAdornment position='end'>%</InputAdornment>
+                                    }}
+                                    inputProps={{
+                                        maxLength: 3
                                     }}
                                 />
                             </Grid>
@@ -296,6 +320,9 @@ const MpCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                     }}
                                     InputProps={{
                                         endAdornment: <InputAdornment position='end'>%</InputAdornment>
+                                    }}
+                                    inputProps={{
+                                        maxLength: 3
                                     }}
                                 />
                             </Grid>
