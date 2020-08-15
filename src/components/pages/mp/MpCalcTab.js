@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useForm, useFieldArray, FormProvider } from 'react-hook-form';
 import PropTypes from 'prop-types';
 import { Container, Grid, Button, Typography, InputAdornment, makeStyles } from '@material-ui/core';
@@ -43,16 +43,15 @@ const useStyles = makeStyles((theme) => ({
 const MpCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
     //objects are merged so we can keep the user's localstorage even when new fields are added
     const formValues = tabInfo.formState != null ? { ...MpFormInit, ...tabInfo.formState } : MpFormInit;
-    const [isDirty, setDirty] = useState(false);
 
     const classes = useStyles();
 
-    const { getValues, ...formMethods } = useForm({
+    const { ...formMethods } = useForm({
         defaultValues: formValues
     });
 
     const handleChange = () => {
-        setDirty(true);
+        onFormChange(formMethods.getValues(), index);
     };
     formMethods.handleChange = handleChange;
 
@@ -79,18 +78,6 @@ const MpCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
     const onSubmit = (data) => {
         calculateResults(data);
     };
-
-    useEffect(() => {
-        if (isDirty) {
-            const timeout = setTimeout(() => {
-                onFormChange(getValues(), index);
-                setDirty(false);
-            }, 500);
-            return () => {
-                clearTimeout(timeout);
-            };
-        }
-    }, [isDirty, getValues, onFormChange, index]);
 
     const reduceIfExists = (array, operation) => {
         return array == null
@@ -155,16 +142,30 @@ const MpCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                     <FormSection>
                         <Grid container>
                             <Grid item xs={4}>
-                                <SelectInput name='discType' label='ディスク種類' options={mpConstants.DISC_TYPE_DROPDOWN} />
+                                <SelectInput
+                                    name='discType'
+                                    label='ディスク種類'
+                                    options={mpConstants.DISC_TYPE_DROPDOWN}
+                                    variant='outlined'
+                                    showErrors
+                                />
                             </Grid>
                             <Grid item xs={4}>
-                                <SelectInput name='discSlot' label='ディスク位置' options={constants.DISC_SLOT_DROPDOWN} />
+                                <SelectInput
+                                    name='discSlot'
+                                    label='ディスク位置'
+                                    options={constants.DISC_SLOT_DROPDOWN}
+                                    variant='outlined'
+                                    showErrors
+                                />
                             </Grid>
                             <Grid item xs={4}>
                                 <SelectInput
                                     name='charType'
                                     label='キャラクタータイプ'
+                                    variant='outlined'
                                     options={mpConstants.CHAR_TYPE_DROPDOWN}
+                                    showErrors
                                 />
                             </Grid>
                             <Grid item xs={4}>
@@ -192,11 +193,7 @@ const MpCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                         collapse
                         open={acceleMpUpMemoria.fields.length > 0 || mpUpMemoria.fields.length > 0}
                     >
-                        <FieldArrayWrapper
-                            name='acceleMpUpMemoria'
-                            label='Accel MPUPメモリア'
-                            fieldArray={acceleMpUpMemoria}
-                        >
+                        <FieldArrayWrapper name='acceleMpUpMemoria' label='Accel MPUP' fieldArray={acceleMpUpMemoria}>
                             {acceleMpUpMemoria.fields.map((field, index) => (
                                 <FieldArrayElement key={index} fieldArray={acceleMpUpMemoria} index={index}>
                                     <SelectInput
@@ -212,7 +209,7 @@ const MpCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                 </FieldArrayElement>
                             ))}
                         </FieldArrayWrapper>
-                        <FieldArrayWrapper name='mpUpMemoria' label='MP獲得量UPメモリア' fieldArray={mpUpMemoria}>
+                        <FieldArrayWrapper name='mpUpMemoria' label='MP獲得量UP' fieldArray={mpUpMemoria}>
                             {mpUpMemoria.fields.map((field, index) => (
                                 <FieldArrayElement key={index} fieldArray={mpUpMemoria} index={index}>
                                     <SelectInput
@@ -234,11 +231,7 @@ const MpCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                         collapse
                         open={acceleMpUpConnects.fields.length > 0 || mpUpConnects.fields.length > 0}
                     >
-                        <FieldArrayWrapper
-                            name='acceleMpUpConnects'
-                            label='Accel MPUPコネクト'
-                            fieldArray={acceleMpUpConnects}
-                        >
+                        <FieldArrayWrapper name='acceleMpUpConnects' label='Accel MPUP' fieldArray={acceleMpUpConnects}>
                             {acceleMpUpConnects.fields.map((field, index) => (
                                 <FieldArrayElement key={index} fieldArray={acceleMpUpConnects} index={index}>
                                     <SelectInput
@@ -254,7 +247,7 @@ const MpCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                 </FieldArrayElement>
                             ))}
                         </FieldArrayWrapper>
-                        <FieldArrayWrapper name='mpUpConnects' label='MP獲得量UPコネクト' fieldArray={mpUpConnects}>
+                        <FieldArrayWrapper name='mpUpConnects' label='MP獲得量UP' fieldArray={mpUpConnects}>
                             {mpUpConnects.fields.map((field, index) => (
                                 <FieldArrayElement key={index} fieldArray={mpUpConnects} index={index}>
                                     <SelectInput

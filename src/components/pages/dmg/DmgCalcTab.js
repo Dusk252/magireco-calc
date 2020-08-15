@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useForm, useFieldArray, useWatch, FormProvider } from 'react-hook-form';
 import PropTypes from 'prop-types';
 import { Container, Grid, Typography, InputAdornment, Button, Collapse, makeStyles, Box } from '@material-ui/core';
@@ -37,6 +37,7 @@ const DmgFormInit = {
     joutaiIjou: false,
     blastCombo: false,
     puellaCombo: false,
+    isCrit: false,
     isMagiaOrDoppel: 'magia',
     magiaDmg: 0,
     magiaCombo: '1',
@@ -65,15 +66,14 @@ const useStyles = makeStyles((theme) => ({
 const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
     //objects are merged so we can keep the user's localstorage even when new fields are added
     const formValues = tabInfo.formState != null ? { ...DmgFormInit, ...tabInfo.formState } : DmgFormInit;
-    const [isDirty, setDirty] = useState(false);
 
     const classes = useStyles();
 
-    const { getValues, ...formMethods } = useForm({
+    const { ...formMethods } = useForm({
         defaultValues: formValues
     });
     const handleChange = () => {
-        setDirty(true);
+        onFormChange(formMethods.getValues(), index);
     };
     formMethods.handleChange = handleChange;
 
@@ -147,18 +147,6 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
     const onSubmit = (data) => {
         calculateResults(data);
     };
-
-    useEffect(() => {
-        if (isDirty) {
-            const timeout = setTimeout(() => {
-                onFormChange(getValues(), index);
-                setDirty(false);
-            }, 500);
-            return () => {
-                clearTimeout(timeout);
-            };
-        }
-    }, [isDirty, getValues, onFormChange, index]);
 
     const reduceIfExists = (array, operation) => {
         return array == null
@@ -236,15 +224,18 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
             data.discType === 'magia'
                 ? dmgCalcs.totalDmgMagia(
                       baseDamage,
+                      data.questType,
                       Number(data.magiaDmg),
                       data.magiaCombo,
                       magiaDmgHosei,
                       data.zokuseiKankei,
+                      data.joutaiIjou,
                       Number(data.taiseiBairitsuPa),
                       dmgHosei
                   )
                 : dmgCalcs.totalDmgDisc(
                       baseDamage,
+                      data.questType,
                       data.discType,
                       data.discSlot,
                       data.puellaCombo,
@@ -253,8 +244,10 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                       Number(data.chargeCount),
                       chargeGoDmgUp,
                       data.zokuseiKankei,
+                      data.joutaiIjou,
                       Number(data.taiseiBairitsuPa),
-                      dmgHosei
+                      dmgHosei,
+                      data.isCrit
                   );
 
         const finalDamage = {
@@ -444,6 +437,8 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                     name='discType'
                                     label='ディスク種類'
                                     options={dmgConstants.DISC_TYPE_DROPDOWN}
+                                    variant='outlined'
+                                    showErrors
                                 />
                             </Grid>
                             <Grid item xs={4} md={3}>
@@ -465,10 +460,22 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                 />
                             </Grid>
                             <Grid item xs={4} md={3}>
-                                <SelectInput name='zokuseiKankei' label='属性関係' options={dmgConstants.ZOKUSEI_DROPDOWN} />
+                                <SelectInput
+                                    name='zokuseiKankei'
+                                    label='属性関係'
+                                    options={dmgConstants.ZOKUSEI_DROPDOWN}
+                                    variant='outlined'
+                                    showErrors
+                                />
                             </Grid>
                             <Grid item xs={4} md={3}>
-                                <SelectInput name='jinkeiAtk' label='陣形効果' options={dmgConstants.JINKEI_DROPDOWN} />
+                                <SelectInput
+                                    name='jinkeiAtk'
+                                    label='陣形効果'
+                                    options={dmgConstants.JINKEI_DROPDOWN}
+                                    variant='outlined'
+                                    showErrors
+                                />
                             </Grid>
                             <Grid item xs={4} md={3}>
                                 <TextInput
@@ -488,6 +495,8 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                     label='ディスク位置'
                                     options={constants.DISC_SLOT_DROPDOWN}
                                     disabled={watchDiscType === 'magia'}
+                                    variant='outlined'
+                                    showErrors
                                 />
                             </Grid>
                             <Grid item xs={6} md={3}>
@@ -500,7 +509,10 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                 <RadioButtonInput name='questType' options={dmgConstants.QUEST_TYPE_OPTIONS} />
                             </Grid>
                             <Grid item xs={4} md={3}>
-                                <CheckboxInput name='joutaiIjou' label='状態異常マス' />
+                                <CheckboxInput name='joutaiIjou' label='特定状態異常マス' />
+                            </Grid>
+                            <Grid item xs={4} md={3}>
+                                <CheckboxInput name='isCrit' label='クリティカル' />
                             </Grid>
                         </Grid>
                         <Collapse in={watchDiscType === 'magia'} timeout='auto'>
@@ -537,6 +549,8 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                         name='magiaCombo'
                                         label='マギアコンボ'
                                         options={dmgConstants.MAGIA_COMBO_DROPDOWN}
+                                        variant='outlined'
+                                        showErrors
                                     />
                                 </Grid>
                                 <Grid item xs={6} md={3}>
@@ -559,9 +573,9 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                             //chargeDmgUpMemoria,
                             chargeGoDmgUpMemoria,
                             doppelDmgUp
-                        ].some((item) => item.length > 0)}
+                        ].some((item) => item.fields.length > 0)}
                     >
-                        <FieldArrayWrapper name='atkHoseiMemoria' label='攻撃力UPメモリア' fieldArray={atkHoseiMemoria}>
+                        <FieldArrayWrapper name='atkHoseiMemoria' label='攻撃力UP' fieldArray={atkHoseiMemoria}>
                             {atkHoseiMemoria.fields.map((field, index) => (
                                 <FieldArrayElement key={index} fieldArray={atkHoseiMemoria} index={index}>
                                     <SelectInput
@@ -577,7 +591,7 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                 </FieldArrayElement>
                             ))}
                         </FieldArrayWrapper>
-                        <FieldArrayWrapper name='dmgUpMemoria' label='与えるダメージUPメモリア' fieldArray={dmgUpMemoria}>
+                        <FieldArrayWrapper name='dmgUpMemoria' label='与えるダメージUP' fieldArray={dmgUpMemoria}>
                             {dmgUpMemoria.fields.map((field, index) => (
                                 <FieldArrayElement key={index} fieldArray={dmgUpMemoria} index={index}>
                                     <SelectInput
@@ -595,7 +609,7 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                         </FieldArrayWrapper>
                         <FieldArrayWrapper
                             name='dmgUpJoutaiMemoria'
-                            label='ダメージアップ状態メモリア'
+                            label='ダメージアップ状態'
                             fieldArray={dmgUpJoutaiMemoria}
                         >
                             {dmgUpJoutaiMemoria.fields.map((field, index) => (
@@ -615,7 +629,7 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                         </FieldArrayWrapper>
                         <FieldArrayWrapper
                             name='joutaiIjouDmgUpMemoria'
-                            label='敵状態異常時ダメージUPメモリア'
+                            label='敵状態異常時ダメージUP'
                             fieldArray={joutaiIjouDmgUpMemoria}
                         >
                             {joutaiIjouDmgUpMemoria.fields.map((field, index) => (
@@ -633,7 +647,7 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                 </FieldArrayElement>
                             ))}
                         </FieldArrayWrapper>
-                        <FieldArrayWrapper name='defHoseiMemoria' label='防御力DOWNメモリア' fieldArray={defHoseiMemoria}>
+                        <FieldArrayWrapper name='defHoseiMemoria' label='防御力DOWN' fieldArray={defHoseiMemoria}>
                             {defHoseiMemoria.fields.map((field, index) => (
                                 <FieldArrayElement key={index} fieldArray={defHoseiMemoria} index={index}>
                                     <SelectInput
@@ -649,11 +663,7 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                 </FieldArrayElement>
                             ))}
                         </FieldArrayWrapper>
-                        <FieldArrayWrapper
-                            name='blastDmgUpMemoria'
-                            label='Blast ダメージUPメモリア'
-                            fieldArray={blastDmgUpMemoria}
-                        >
+                        <FieldArrayWrapper name='blastDmgUpMemoria' label='Blast ダメージUP' fieldArray={blastDmgUpMemoria}>
                             {blastDmgUpMemoria.fields.map((field, index) => (
                                 <FieldArrayElement key={index} fieldArray={blastDmgUpMemoria} index={index}>
                                     <SelectInput
@@ -671,7 +681,7 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                         </FieldArrayWrapper>
                         <FieldArrayWrapper
                             name='chargeGoDmgUpMemoria'
-                            label='Charge後ダメージUPメモリア'
+                            label='Charge後ダメージUP'
                             fieldArray={chargeGoDmgUpMemoria}
                         >
                             {chargeGoDmgUpMemoria.fields.map((field, index) => (
@@ -689,11 +699,7 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                 </FieldArrayElement>
                             ))}
                         </FieldArrayWrapper>
-                        <FieldArrayWrapper
-                            name='magiaDmgUpMemoria'
-                            label='マギアダメージUPメモリア'
-                            fieldArray={magiaDmgUpMemoria}
-                        >
+                        <FieldArrayWrapper name='magiaDmgUpMemoria' label='マギアダメージUP' fieldArray={magiaDmgUpMemoria}>
                             {magiaDmgUpMemoria.fields.map((field, index) => (
                                 <FieldArrayElement key={index} fieldArray={magiaDmgUpMemoria} index={index}>
                                     <SelectInput
@@ -738,9 +744,9 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                             blastDmgUpConnect,
                             //chargeDmgUpConnect,
                             chargeGoDmgUpConnect
-                        ].some((item) => item.length > 0)}
+                        ].some((item) => item.fields.length > 0)}
                     >
-                        <FieldArrayWrapper name='atkHoseiConnect' label='攻撃力UPコネクト' fieldArray={atkHoseiConnect}>
+                        <FieldArrayWrapper name='atkHoseiConnect' label='攻撃力UP' fieldArray={atkHoseiConnect}>
                             {atkHoseiConnect.fields.map((field, index) => (
                                 <FieldArrayElement key={index} fieldArray={atkHoseiConnect} index={index}>
                                     <SelectInput
@@ -756,7 +762,7 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                 </FieldArrayElement>
                             ))}
                         </FieldArrayWrapper>
-                        <FieldArrayWrapper name='dmgUpConnect' label='与えるダメージUPコネクト' fieldArray={dmgUpConnect}>
+                        <FieldArrayWrapper name='dmgUpConnect' label='与えるダメージUP' fieldArray={dmgUpConnect}>
                             {dmgUpConnect.fields.map((field, index) => (
                                 <FieldArrayElement key={index} fieldArray={dmgUpConnect} index={index}>
                                     <SelectInput
@@ -774,7 +780,7 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                         </FieldArrayWrapper>
                         <FieldArrayWrapper
                             name='joutaiIjouDmgUpConnect'
-                            label='敵状態異常時ダメージUPコネクト'
+                            label='敵状態異常時ダメージUP'
                             fieldArray={joutaiIjouDmgUpConnect}
                         >
                             {joutaiIjouDmgUpConnect.fields.map((field, index) => (
@@ -792,7 +798,7 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                 </FieldArrayElement>
                             ))}
                         </FieldArrayWrapper>
-                        <FieldArrayWrapper name='defHoseiConnect' label='防御力DOWNコネクト' fieldArray={defHoseiConnect}>
+                        <FieldArrayWrapper name='defHoseiConnect' label='防御力DOWN' fieldArray={defHoseiConnect}>
                             {defHoseiConnect.fields.map((field, index) => (
                                 <FieldArrayElement key={index} fieldArray={defHoseiConnect} index={index}>
                                     <SelectInput
@@ -808,11 +814,7 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                 </FieldArrayElement>
                             ))}
                         </FieldArrayWrapper>
-                        <FieldArrayWrapper
-                            name='blastDmgUpConnect'
-                            label='Blast ダメージUPコネクト'
-                            fieldArray={blastDmgUpConnect}
-                        >
+                        <FieldArrayWrapper name='blastDmgUpConnect' label='Blast ダメージUP' fieldArray={blastDmgUpConnect}>
                             {blastDmgUpConnect.fields.map((field, index) => (
                                 <FieldArrayElement key={index} fieldArray={blastDmgUpConnect} index={index}>
                                     <SelectInput
@@ -830,7 +832,7 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                         </FieldArrayWrapper>
                         <FieldArrayWrapper
                             name='chargeGoDmgUpConnect'
-                            label='Charge後ダメージUPコネクト'
+                            label='Charge後ダメージUP'
                             fieldArray={chargeGoDmgUpConnect}
                         >
                             {chargeGoDmgUpConnect.fields.map((field, index) => (
@@ -848,11 +850,7 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                 </FieldArrayElement>
                             ))}
                         </FieldArrayWrapper>
-                        <FieldArrayWrapper
-                            name='magiaDmgUpConnect'
-                            label='マギアダメージUPコネクト'
-                            fieldArray={magiaDmgUpConnect}
-                        >
+                        <FieldArrayWrapper name='magiaDmgUpConnect' label='マギアダメージUP' fieldArray={magiaDmgUpConnect}>
                             {magiaDmgUpConnect.fields.map((field, index) => (
                                 <FieldArrayElement key={index} fieldArray={magiaDmgUpConnect} index={index}>
                                     <SelectInput
@@ -870,9 +868,11 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                         </FieldArrayWrapper>
                     </FormSection>
                     <FormSection label='倍率としての入力'>
-                        <Typography variant='body2'>
-                            ※メモリアやコネクトを入力した場合、この数字がそれで計算された倍率に足されます。
-                        </Typography>
+                        <Box mb={3}>
+                            <Typography variant='body2'>
+                                ※メモリアやコネクトを入力した場合、この数字がそれで計算された倍率に足されます。
+                            </Typography>
+                        </Box>
                         <Grid container>
                             <Grid item xs={4} md={3}>
                                 <TextInput

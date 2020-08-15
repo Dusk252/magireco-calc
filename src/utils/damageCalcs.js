@@ -1,4 +1,12 @@
-import { JINKEI_MAP, MAGIA_COMBO_MAP, DISC_MAP, BLAST_MOD, ZOKUSEI_MAP, JOUTAI_IJOU_YUURI } from '../constants/dmgConst';
+import {
+    JINKEI_MAP,
+    MAGIA_COMBO_MAP,
+    DISC_MAP,
+    BLAST_MOD,
+    ZOKUSEI_MAP,
+    JOUTAI_IJOU_YUURI,
+    ZOKUSEI_KYOUKA_MAGIA_MAP
+} from '../constants/dmgConst';
 
 const ChargeHoseiTable = {
     accele: {
@@ -26,7 +34,7 @@ const ChargeHoseiTable = {
     },
     blast: {
         0: 1,
-        1: 1.3,
+        1: 1.4,
         2: 1.7,
         3: 2.0,
         4: 2.3,
@@ -162,6 +170,7 @@ export const baseDmg = (jikkouAtk, jikkouDef) => {
 //通常の攻撃の補正ダメージ
 export const totalDmgDisc = (
     baseDmg,
+    questType,
     discType,
     discSlot,
     puellaCombo,
@@ -169,9 +178,11 @@ export const totalDmgDisc = (
     discKakusei,
     chargeCount,
     chargeGoDmgUp,
-    zokuseiHosei,
+    zokuseiKankei,
+    isJoutaiIjou,
     taiseiBairitsuPa,
-    dmgHosei
+    dmgHosei,
+    isCrit
 ) => {
     let comboStatus =
         puellaCombo && blastCombo && discType === 'blast'
@@ -181,28 +192,36 @@ export const totalDmgDisc = (
             : 'default';
     return (
         baseDmg *
-        DISC_MAP[comboStatus][discType] *
+        (DISC_MAP[comboStatus][discType] + (questType === 'mirrors' && discType === 'blast') ? 0.1 : 0) *
         (discType === 'blast' ? BLAST_MOD[discSlot] : 1) *
         (1 + discKakusei) *
         Math.min(
             discType === 'accele' || discType === 'blast'
-                ? ChargeHoseiTable[discType][Math.min(chargeCount, 20)] * (1 + chargeGoDmgUp)
+                ? ChargeHoseiTable[discType][Math.min(chargeCount, 20)] *
+                      (questType === 'mirrors' ? 0.9 : 1) *
+                      (1 + chargeGoDmgUp)
                 : 1,
             5.5
         ) *
-        ZOKUSEI_MAP[zokuseiHosei] *
+        ZOKUSEI_MAP[questType][zokuseiKankei] *
+        (zokuseiKankei == 1 && isJoutaiIjou ? JOUTAI_IJOU_YUURI : 1) *
         (1 + taiseiBairitsuPa * 0.01) *
-        Math.min(Math.max(dmgHosei, kyoukaLimits.totalDmgHosei.min), kyoukaLimits.totalDmgHosei.max)
+        (Math.min(Math.max(dmgHosei, kyoukaLimits.totalDmgHosei.min), kyoukaLimits.totalDmgHosei.max) +
+            (isCrit ? (dmgHosei > 1 ? 1 : dmgHosei) : 0)) *
+        (questType === 'mirrors' ? 0.7 : 1)
     );
 };
 
 //マギア/ドッペルの補正ダメージ
 export const totalDmgMagia = (
     baseDmg,
+    questType,
     magiaBaseDmg,
     magiaCombo,
     magiaDmgHosei,
-    zokuseiHosei,
+    zokuseiKankei,
+    isZokuseiKyouka,
+    isJoutaiIjou,
     taiseiBairitsuPa,
     dmgHosei
 ) => {
@@ -211,8 +230,12 @@ export const totalDmgMagia = (
         (magiaBaseDmg * 0.01) *
         MAGIA_COMBO_MAP[magiaCombo] *
         Math.min(Math.max(magiaDmgHosei, kyoukaLimits.magiaHosei.min), kyoukaLimits.magiaHosei.max) *
-        ZOKUSEI_MAP[zokuseiHosei] *
+        (zokuseiKankei == 1 && isZokuseiKyouka
+            ? ZOKUSEI_KYOUKA_MAGIA_MAP[questType]
+            : ZOKUSEI_MAP[questType][zokuseiKankei]) *
+        (zokuseiKankei == 1 && isJoutaiIjou ? JOUTAI_IJOU_YUURI : 1) *
         (1 + taiseiBairitsuPa * 0.01) *
-        Math.min(Math.max(dmgHosei, kyoukaLimits.totalDmgHosei.min), kyoukaLimits.totalDmgHosei.max)
+        Math.min(Math.max(dmgHosei, kyoukaLimits.totalDmgHosei.min), kyoukaLimits.totalDmgHosei.max) *
+        (questType === 'mirrors' ? 0.7 : 1)
     );
 };

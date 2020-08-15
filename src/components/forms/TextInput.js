@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
 
 const TextInput = ({ name, label, defaultValue, validationObj, ...otherProps }) => {
     const classes = useStyles();
-    const { register, handleChange, errors } = useFormContext();
+    const { register, handleChange, errors, clearErrors } = useFormContext();
     return (
         <FormControl className={classes.root} fullWidth>
             <TextField
@@ -22,12 +22,15 @@ const TextInput = ({ name, label, defaultValue, validationObj, ...otherProps }) 
                 variant='outlined'
                 inputRef={register(validationObj ?? {})}
                 defaultValue={defaultValue}
-                onChange={handleChange}
                 onFocus={(e) => {
                     if (e.target.value == 0) e.target.value = '';
                 }}
                 onBlur={(e) => {
-                    if (e.target.value == '') e.target.value = 0;
+                    if (e.target.value == '') {
+                        e.target.value = 0;
+                        clearErrors(name);
+                    }
+                    handleChange();
                 }}
                 {...otherProps}
             />

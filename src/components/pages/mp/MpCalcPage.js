@@ -52,7 +52,7 @@ const MpCalcPage = ({ updateFormTab, addFormTab, removeFormTab, updateFormResult
             <span className='counter' style={{ position: 'fixed', top: 0, left: 0, zIndex: 9999 }}>
                 Render Count: {renderCount}
             </span>
-            <AppBar position='static'>
+            <AppBar>
                 <Tabs
                     value={currentTab}
                     onChange={handleChange}

@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 const TabPanel = ({ index, value, children, ...other }) => {
     return (
         <div
+            style={{ paddingTop: '48px' }}
             role='tabpanel'
             hidden={value !== index}
             id={`simple-tabpanel-${index}`}

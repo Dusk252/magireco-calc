@@ -11,14 +11,14 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const SelectInput = ({ name, label, defaultValue, options, validationObj, ...otherProps }) => {
+const SelectInput = ({ name, label, defaultValue, options, validationObj, variant, showErrors = false, ...otherProps }) => {
     const classes = useStyles();
     const { handleChange, errors, control } = useFormContext();
     return (
         <FormControl className={classes.root} fullWidth>
             <Controller
                 render={({ onChange, onBlur, value }) => (
-                    <FormControl component='fieldset'>
+                    <FormControl variant={variant} component='fieldset'>
                         {label && <InputLabel id={name + '-label'}>{label}</InputLabel>}
                         <Select
                             labelId={name + '-label'}
@@ -46,9 +46,11 @@ const SelectInput = ({ name, label, defaultValue, options, validationObj, ...oth
                 defaultValue={defaultValue}
                 rules={validationObj ?? {}}
             />
-            <FormHelperText>
-                {errors[name] != null ? <span> {VALIDATION_MESSAGES[errors[name].type]}</span> : ''}
-            </FormHelperText>
+            {showErrors && (
+                <FormHelperText>
+                    {errors[name] != null ? <span> {VALIDATION_MESSAGES[errors[name].type]}</span> : ''}
+                </FormHelperText>
+            )}
         </FormControl>
     );
 };
@@ -58,7 +60,9 @@ SelectInput.propTypes = {
     label: PropTypes.string,
     defaultValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     options: PropTypes.array.isRequired,
-    validationObj: PropTypes.object
+    validationObj: PropTypes.object,
+    variant: PropTypes.string,
+    showErrors: PropTypes.bool
 };
 
 export default SelectInput;

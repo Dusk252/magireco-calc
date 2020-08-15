@@ -25,6 +25,9 @@ const theme = createMuiTheme({
                 '&& a': {
                     padding: '16px'
                 }
+            },
+            positionFixed: {
+                top: 'auto'
             }
         },
         MuiTabScrollButton: {
@@ -55,6 +58,19 @@ const theme = createMuiTheme({
                 color: 'rgba(255, 255, 255, 0.7)',
                 fontSize: '0.75rem',
                 marginBottom: '12px'
+            }
+        },
+        MuiSelect: {
+            select: {
+                '&$outlined&:focus': {
+                    backgroundColor: '#424242'
+                }
+            }
+        },
+        MuiFormHelperText: {
+            root: {
+                lineHeight: '1.2',
+                height: '1.2em'
             }
         }
         // MuiListItem: {
@@ -99,7 +115,7 @@ const App = () => {
                         About
                     </Link>
                 </AppBar>
-                <div style={{ paddingTop: '50px' }}>
+                <div style={{ paddingTop: '52px' }}>
                     <Switch>
                         <Route exact path='/'>
                             <Redirect to='/dmg' />

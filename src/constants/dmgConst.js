@@ -118,11 +118,27 @@ export const MAGIA_COMBO_MAP = {
 };
 
 export const ZOKUSEI_MAP = {
-    0: 1,
-    1: 1.5,
-    2: 0.5
+    quest: {
+        0: 1,
+        1: 1.5,
+        2: 0.5
+    },
+    mirrors: {
+        0: 1,
+        1: 1.5,
+        2: 0.5
+    },
+    kimochisen: {
+        0: 0.75,
+        1: 1.65,
+        2: 0.5
+    }
 };
 
-export const JOUTAI_IJOU_YUURI = {
-    quest: 1.8
+export const JOUTAI_IJOU_YUURI = 1.2;
+
+export const ZOKUSEI_KYOUKA_MAGIA_MAP = {
+    quest: 3,
+    mirrors: 3,
+    kimochisen: 3.1
 };
