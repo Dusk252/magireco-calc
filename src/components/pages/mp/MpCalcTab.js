@@ -15,7 +15,7 @@ import { mpUp as mpUpConnectCalc, acceleMpUp as acceleMpUpConnectCalc } from '..
 import { mpCalc } from '../../../utils/mpCalcs';
 import * as constants from '../../../constants/const';
 import * as mpConstants from '../../../constants/mpConst';
-import ResultsDisplay from '../../ResultsDisplay';
+import ResultsDisplay from '../../forms/ResultsDisplay';
 
 const MpFormInit = {
     mpUpPa: 0,
@@ -24,8 +24,8 @@ const MpFormInit = {
     chargeCount: 0,
     acceleBonus: false,
     mirrors: false,
-    charType: 'magia',
-    discType: 'accele',
+    charType: constants.DISC_TYPE.MAGIA,
+    discType: constants.DISC_TYPE.ACCELE,
     discSlot: '1',
     acceleMpUpMemoria: [],
     mpUpMemoria: [],
@@ -201,7 +201,9 @@ const MpCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                 <CheckboxInput
                                     name='acceleBonus'
                                     label='初手Acceleボーナス'
-                                    disabled={watchDiscInfo.discType !== 'accele' && watchDiscInfo.discSlot == 1}
+                                    disabled={
+                                        watchDiscInfo.discType !== constants.DISC_TYPE.ACCELE && watchDiscInfo.discSlot == 1
+                                    }
                                 />
                             </Grid>
                             <Grid item xs={4}>

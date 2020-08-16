@@ -1,4 +1,5 @@
-import { INITIAL_VALUES as initialValues, CHAR_TYPES_MP_MOD as charTypesMpMod } from '../constants/mpConst';
+import { INITIAL_VALUES, CHAR_TYPES_MP_MOD, CHAR_TYPES_MP_MOD_DEF } from '../constants/mpConst';
+import { QUEST_TYPE, DISC_TYPE } from '../constants/const';
 
 const CMPTable = {
     0: 1,
@@ -26,14 +27,15 @@ const CMPTable = {
 
 export const mpCalc = (acceleBonus, mirrors, discSlot, discType, charType, mpUp, acceleMpUp, chargeCount) => {
     return (
-        (initialValues[mirrors ? 'mirrors' : 'default'][discType][discSlot] + (acceleBonus && discSlot != 1 ? 3 : 0)) *
-        charTypesMpMod[charType] *
+        (INITIAL_VALUES[mirrors ? QUEST_TYPE.MIRRORS : QUEST_TYPE.QUEST][discType][discSlot] +
+            (acceleBonus && discSlot != 1 ? 3 : 0)) *
+        CHAR_TYPES_MP_MOD[charType] *
         (1 + mpUp) *
         (1 + acceleMpUp) *
-        CMPTable[Math.min(chargeCount, 20)]
+        (discType === DISC_TYPE.ACCELE ? CMPTable[Math.min(chargeCount, 20)] : 1)
     );
 };
 
-export const mpCalcOnDef = (charType, mpUp, mpUpDef) => {
-    return 4 * charTypesMpMod[charType] * mpUp * mpUpDef;
+export const mpCalcOnDef = (charType, mpUp, mpUpDef, questType) => {
+    return (questType === QUEST_TYPE.MIRRORS ? 6 : 4) * CHAR_TYPES_MP_MOD_DEF[charType] * (1 + mpUp) * (1 + mpUpDef);
 };

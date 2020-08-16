@@ -1,18 +1,25 @@
+import { DISC_TYPE, QUEST_TYPE, COMBO_TYPE } from './const';
+
+export const MIN_TOTAL_DMG = 250;
+export const MIN_MAGIA_DMG = 500;
+export const MIN_BASE_DMG = 500;
+export const MAX_DMG = 9999999;
+
 export const DISC_TYPE_DROPDOWN = [
     {
-        value: 'accele',
+        value: DISC_TYPE.ACCELE,
         text: 'アクセル'
     },
     {
-        value: 'blast',
+        value: DISC_TYPE.BLAST,
         text: 'ブラスト'
     },
     {
-        value: 'charge',
+        value: DISC_TYPE.CHARGE,
         text: 'チャージ'
     },
     {
-        value: 'magia',
+        value: DISC_TYPE.MAGIA,
         text: 'マギア'
     }
 ];
@@ -53,15 +60,15 @@ export const JINKEI_DROPDOWN = [
 
 export const QUEST_TYPE_OPTIONS = [
     {
-        value: 'quest',
+        value: QUEST_TYPE.QUEST,
         text: 'クエスト'
     },
     {
-        value: 'mirrors',
+        value: QUEST_TYPE.MIRRORS,
         text: 'ミラーズ'
     },
     {
-        value: 'kimochisen',
+        value: QUEST_TYPE.KIMOCHISEN,
         text: 'キモチ戦'
     }
 ];
@@ -82,18 +89,18 @@ export const MAGIA_COMBO_DROPDOWN = [
 ];
 
 export const DISC_MAP = {
-    default: {
-        accele: 1.0,
-        blast: 0.6,
-        charge: 0.8
+    [COMBO_TYPE.DEFAULT]: {
+        [DISC_TYPE.ACCELE]: 1.0,
+        [DISC_TYPE.BLAST]: 0.6,
+        [DISC_TYPE.CHARGE]: 0.8
     },
-    puellaOrBlastCombo: {
-        accele: 1.2,
-        blast: 0.9,
-        charge: 1.2
+    [COMBO_TYPE.PUELLA_OR_BLAST]: {
+        [DISC_TYPE.ACCELE]: 1.2,
+        [DISC_TYPE.BLAST]: 0.9,
+        [DISC_TYPE.CHARGE]: 1.2
     },
-    puellaBlastCombo: {
-        blast: 1.2
+    [COMBO_TYPE.PUELLA_BLAST]: {
+        [DISC_TYPE.BLAST]: 1.2
     }
 };
 
@@ -117,17 +124,17 @@ export const MAGIA_COMBO_MAP = {
 };
 
 export const ZOKUSEI_MAP = {
-    quest: {
+    [QUEST_TYPE.QUEST]: {
         0: 1,
         1: 1.5,
         2: 0.5
     },
-    mirrors: {
+    [QUEST_TYPE.MIRRORS]: {
         0: 1,
         1: 1.5,
         2: 0.5
     },
-    kimochisen: {
+    [QUEST_TYPE.KIMOCHISEN]: {
         0: 0.75,
         1: 1.65,
         2: 0.5
@@ -137,9 +144,9 @@ export const ZOKUSEI_MAP = {
 export const JOUTAI_IJOU_YUURI = 1.2;
 
 export const ZOKUSEI_KYOUKA_MAGIA_MAP = {
-    quest: 3,
-    mirrors: 3,
-    kimochisen: 3.1
+    [QUEST_TYPE.QUEST]: 3,
+    [QUEST_TYPE.MIRRORS]: 3,
+    [QUEST_TYPE.KIMOCHISEN]: 3.1
 };
 
 export const KYOUKA_LIMITS = {

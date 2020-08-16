@@ -36,6 +36,26 @@ export const DISC_SLOT_DROPDOWN = [
     }
 ];
 
+export const DISC_TYPE = {
+    ACCELE: 'accele',
+    BLAST: 'blast',
+    CHARGE: 'charge',
+    MAGIA: 'magia',
+    DOPPEL: 'doppel'
+};
+
+export const QUEST_TYPE = {
+    QUEST: 'quest',
+    MIRRORS: 'mirrors',
+    KIMOCHISEN: 'kimochisen'
+};
+
+export const COMBO_TYPE = {
+    DEFAULT: 'default',
+    PUELLA_OR_BLAST: 'puellaOrBlastCombo',
+    PUELLA_BLAST: 'puellaBlastCombo'
+};
+
 export const VALIDATION_MESSAGES = {
     required: 'このフィールドは入力必須です。',
     isNumber: '数字を入力してください。',

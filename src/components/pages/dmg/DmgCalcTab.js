@@ -16,7 +16,7 @@ import * as dmgConstants from '../../../constants/dmgConst';
 import * as dmgCalcs from '../../../utils/damageCalcs';
 import * as memoriaCalcs from '../../../utils/memoriaCalcs';
 import * as connectCalcs from '../../../utils/connectCalcs';
-import ResultsDisplay from '../../ResultsDisplay';
+import ResultsDisplay from '../../forms/ResultsDisplay';
 
 const DmgFormInit = {
     atk: 0,
@@ -27,18 +27,18 @@ const DmgFormInit = {
     defKakusei: 0,
     defMemoria: 0,
     defEnhance: 0,
-    discType: 'accele',
+    discType: constants.DISC_TYPE.ACCELE,
     discSlot: '1',
     discKakusei: 0,
     zokuseiKankei: '0',
     jinkeiAtk: '1',
     chargeCount: 0,
-    questType: 'quest',
+    questType: constants.QUEST_TYPE.QUEST,
     joutaiIjou: false,
     blastCombo: false,
     puellaCombo: false,
     isCrit: false,
-    isMagiaOrDoppel: 'magia',
+    isMagiaOrDoppel: constants.DISC_TYPE.MAGIA,
     magiaDmg: 0,
     magiaCombo: '1',
     zokuseiKyoukaMagia: false,
@@ -190,9 +190,7 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                 reduceIfExists(data.magiaDmgUpConnect, connectCalcs.magiaDmgUp) +
                 Number(data.magiaDmgUpPa) * 0.01
         );
-        const doppelDmgHosei = dmgCalcs.doppelHosei(
-            reduceIfExists(data.doppelDmgUp, memoriaCalcs.magiaDmgUp) + Number(data.doppelDmgUpPa) * 0.01
-        );
+        const doppelDmgHosei = reduceIfExists(data.doppelDmgUp, memoriaCalcs.magiaDmgUp) + Number(data.doppelDmgUpPa) * 0.01;
         const dmgUpJoutaiHosei =
             reduceIfExists(data.dmgUpJoutaiMemoria, memoriaCalcs.damageUp) + Number(data.dmgUpJoutaiPa) * 0.01;
         const joutaiIjouDmgUp =
@@ -213,7 +211,7 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
             dmgUpJoutaiHosei,
             joutaiIjouDmgUp,
             doppelDmgHosei,
-            data.isMagiaOrDoppel === 'doppel',
+            data.isMagiaOrDoppel === constants.DISC_TYPE.DOPPEL,
             data.joutaiIjou,
             data.discType,
             blastDmgUp
@@ -221,7 +219,7 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
         const baseDamage = dmgCalcs.baseDmg(jikkouAtk, jikkouDef);
 
         const totalDamage =
-            data.discType === 'magia'
+            data.discType === constants.DISC_TYPE.MAGIA
                 ? dmgCalcs.totalDmgMagia(
                       baseDamage,
                       data.questType,
@@ -251,10 +249,7 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                       data.isCrit
                   );
 
-        const finalDamage = {
-            min: totalDamage * 0.95,
-            max: totalDamage * 1.05
-        };
+        const finalDamage = dmgCalcs.finalDamage(totalDamage);
 
         onFormSubmit(
             {
@@ -310,6 +305,15 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                         limits: {
                             min: dmgConstants.KYOUKA_LIMITS.dmgUpHosei.min * 100,
                             max: dmgConstants.KYOUKA_LIMITS.dmgUpHosei.max * 100
+                        }
+                    },
+                    {
+                        label: 'Blast ダメージ補正',
+                        value: blastDmgUp * 100,
+                        postfix: '%',
+                        limits: {
+                            min: dmgConstants.KYOUKA_LIMITS.blastDmgUpHosei.min * 100,
+                            max: dmgConstants.KYOUKA_LIMITS.blastDmgUpHosei.max * 100
                         }
                     },
                     {
@@ -509,7 +513,7 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                     inputProps={{
                                         maxLength: 2
                                     }}
-                                    disabled={watchDiscType === 'magia'}
+                                    disabled={watchDiscType === constants.DISC_TYPE.MAGIA}
                                 />
                             </Grid>
                             <Grid item xs={4} md={3}>
@@ -543,7 +547,7 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                     inputProps={{
                                         maxLength: 2
                                     }}
-                                    disabled={watchDiscType === 'magia'}
+                                    disabled={watchDiscType === constants.DISC_TYPE.MAGIA}
                                 />
                             </Grid>
                             <Grid item xs={4} md={3}>
@@ -551,7 +555,7 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                     name='discSlot'
                                     label='ディスク位置'
                                     options={constants.DISC_SLOT_DROPDOWN}
-                                    disabled={watchDiscType === 'magia'}
+                                    disabled={watchDiscType === constants.DISC_TYPE.MAGIA}
                                     variant='outlined'
                                     showErrors
                                 />
@@ -560,14 +564,14 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                 <CheckboxInput
                                     name='puellaCombo'
                                     label='ピュエラコンボ'
-                                    disabled={watchDiscType === 'magia'}
+                                    disabled={watchDiscType === constants.DISC_TYPE.MAGIA}
                                 />
                             </Grid>
                             <Grid item xs={4} md={3}>
                                 <CheckboxInput
                                     name='blastCombo'
                                     label='ブラストコンボ'
-                                    disabled={watchDiscType !== 'blast'}
+                                    disabled={watchDiscType !== constants.DISC_TYPE.BLAST}
                                 />
                             </Grid>
                             <Grid item xs={8} md={6}>
@@ -577,20 +581,24 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                                 <CheckboxInput name='joutaiIjou' label='特定状態異常マス' />
                             </Grid>
                             <Grid item xs={4} md={3}>
-                                <CheckboxInput name='isCrit' label='クリティカル' disabled={watchDiscType === 'magia'} />
+                                <CheckboxInput
+                                    name='isCrit'
+                                    label='クリティカル'
+                                    disabled={watchDiscType === constants.DISC_TYPE.MAGIA}
+                                />
                             </Grid>
                         </Grid>
-                        <Collapse in={watchDiscType === 'magia'} timeout='auto'>
+                        <Collapse in={watchDiscType === constants.DISC_TYPE.MAGIA} timeout='auto'>
                             <Box pt={3} pb={0} mb={3} borderBottom={'1px solid rgba(255,255,255,.5)'}>
-                                <Typography variant='subtitle1'>マギア関係</Typography>
+                                <Typography variant='subtitle1'>マギア関連</Typography>
                             </Box>
                             <Grid container>
                                 <Grid item xs={6} md={3}>
                                     <RadioButtonInput
                                         name='isMagiaOrDoppel'
                                         options={[
-                                            { value: 'magia', text: 'マギア' },
-                                            { value: 'doppel', text: 'ドッペル' }
+                                            { value: constants.DISC_TYPE.MAGIA, text: 'マギア' },
+                                            { value: constants.DISC_TYPE.DOPPEL, text: 'ドッペル' }
                                         ]}
                                     />
                                 </Grid>
@@ -1033,7 +1041,7 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                             <Grid item xs={4} md={3}>
                                 <TextInput
                                     name='blastDmgUpPa'
-                                    label='敵状態異常時ダメージUP倍率'
+                                    label='Blast ダメージUP倍率'
                                     validationObj={{
                                         required: true,
                                         validate: {
