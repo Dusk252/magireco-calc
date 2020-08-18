@@ -17,7 +17,7 @@ module.exports = {
         rules: [
             { test: /\.jsx?$/, use: ['babel-loader', 'eslint-loader'], exclude: /node_modules/ },
             { test: /\.css$/, use: ['style-loader', 'css-loader'] },
-            { test: /\.(png|jpe?g|gif)$/i, use: ['file-loader'] },
+            { test: /\.(png|jpe?g|gif|ico)$/i, use: ['file-loader'] },
             {
                 test: /\.svg$/,
                 use: [
@@ -41,7 +41,7 @@ module.exports = {
         new HtmlWebpackPlugin({
             //where to serve the html from
             template: './src/index.html',
-            icon: 'favicon.ico'
+            favicon: './src/favicon.ico'
         })
     ],
     node: {

@@ -1,15 +1,14 @@
 {
-    "name": "magireco-dmg-calc",
-    "version": "1.0.0",
-    "description": "A MagiReco damage calculator.",
+    "name": "magireco-calc",
+    "version": "0.0.1",
+    "description": "A MagiReco calculator.",
     "main": "index.js",
     "scripts": {
-        "start": "webpack-dev-server",
-        "build": "webpack",
+        "start": "webpack-dev-server --config webpack.config.dev.js",
+        "build": "webpack --config webpack.config.prod.js",
         "test": "jest"
     },
     "author": "Dusk252",
-    "license": "ISC",
     "devDependencies": {
         "@babel/core": "^7.10.4",
         "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
@@ -31,6 +30,7 @@
         "redux-immutable-state-invariant": "^2.1.0",
         "style-loader": "^1.2.1",
         "webpack": "^4.43.0",
+        "webpack-bundle-analyzer": "^3.8.0",
         "webpack-cli": "^3.3.12",
         "webpack-dev-server": "^3.11.0"
     },
