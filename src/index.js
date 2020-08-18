@@ -4,6 +4,9 @@ import App from './components/App';
 import configureStore from './redux/store';
 import { Provider as ReduxProvider } from 'react-redux';
 import { LOCAL_STORAGE_MP, LOCAL_STORAGE_DMG } from './constants/const';
+import { firebaseInit } from './firebaseHelper';
+
+firebaseInit();
 
 //localStorage.removeItem(LOCAL_STORAGE_MP);
 //localStorage.removeItem(LOCAL_STORAGE_DMG);

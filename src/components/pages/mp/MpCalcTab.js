@@ -6,9 +6,11 @@ import { mpUp as mpUpConnectCalc, acceleMpUp as acceleMpUpConnectCalc } from '..
 import { mpCalc } from '../../../utils/mpCalcs';
 import ResultsDisplay from '../../forms/ResultsDisplay';
 import MpCalcForm from './MpCalcForm';
+import { firebaseLogEvent } from '../../../firebaseHelper';
 
 const MpCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
     const onSubmit = (data) => {
+        firebaseLogEvent('mpCalcForm');
         calculateResults(data);
     };
 

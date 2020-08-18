@@ -8,9 +8,11 @@ import * as memoriaCalcs from '../../../utils/memoriaCalcs';
 import * as connectCalcs from '../../../utils/connectCalcs';
 import ResultsDisplay from '../../forms/ResultsDisplay';
 import DmgCalcForm from './DmgCalcForm';
+import { firebaseLogEvent } from '../../../firebaseHelper';
 
 const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
     const onSubmit = (data) => {
+        firebaseLogEvent('dmgCalcForm');
         calculateResults(data);
     };
 
