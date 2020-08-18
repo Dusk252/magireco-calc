@@ -2,13 +2,14 @@ import React, { useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { updateMpFormTab, addMpFormTab, removeMpFormTab, updateMpFormResults } from '../../../redux/actions/mpFormActions';
-import { Tabs, AppBar } from '@material-ui/core';
+import { Tabs, AppBar, Button } from '@material-ui/core';
+import AddIcon from '@material-ui/icons/Add';
 import TabItem from '../../tabs/TabItem';
 import TabPanel from '../../tabs/TabPanel';
 import TabAddDialog from '../../tabs/TabAddDialog';
 import MpCalcTab from './MpCalcTab';
-
-let renderCount = 0;
+import { LOCAL_STORAGE_MP } from '../../../constants/const';
+import MpCalcHome from './MpCalcHome';
 
 const MpCalcPage = ({ updateFormTab, addFormTab, removeFormTab, updateFormResults, formTabsState }) => {
     const [currentTab, setCurrentTab] = useState(0);
@@ -19,9 +20,13 @@ const MpCalcPage = ({ updateFormTab, addFormTab, removeFormTab, updateFormResult
     }, [removingTab]);
 
     useEffect(() => {
-        localStorage.setItem('mpFormTabsState', JSON.stringify(formTabsState));
+        localStorage.setItem(LOCAL_STORAGE_MP, JSON.stringify(formTabsState));
     }, [formTabsState]);
 
+    const handleAdd = (title) => {
+        if (formTabsState.length === 0) setCurrentTab(0);
+        addFormTab(title);
+    };
     const handleChange = (event, newValue) => {
         setCurrentTab(newValue);
     };
@@ -45,13 +50,10 @@ const MpCalcPage = ({ updateFormTab, addFormTab, removeFormTab, updateFormResult
         [updateFormTab]
     );
 
-    renderCount++;
-
-    return (
+    return !removingTab && formTabsState.length === 0 ? (
+        <MpCalcHome handleAdd={handleAdd} />
+    ) : (
         <>
-            <span className='counter' style={{ position: 'fixed', top: 0, left: 0, zIndex: 9999 }}>
-                Render Count: {renderCount}
-            </span>
             <AppBar>
                 <Tabs
                     value={currentTab}
@@ -65,7 +67,14 @@ const MpCalcPage = ({ updateFormTab, addFormTab, removeFormTab, updateFormResult
                         return <TabItem label={tab.title} index={index} key={index} handleRemove={handleRemove} />;
                     })}
                 </Tabs>
-                <TabAddDialog onAddTab={addFormTab} />
+                <TabAddDialog
+                    onAddTab={handleAdd}
+                    render={(style, handleClick) => (
+                        <Button className={style} color='secondary' onClick={handleClick}>
+                            <AddIcon />
+                        </Button>
+                    )}
+                />
             </AppBar>
             {!removingTab &&
                 formTabsState.map((tab, index) => {

@@ -7,13 +7,14 @@ import {
     removeDmgFormTab,
     updateDmgFormResults
 } from '../../../redux/actions/dmgFormActions';
-import { Tabs, AppBar } from '@material-ui/core';
+import { Tabs, AppBar, Button } from '@material-ui/core';
+import AddIcon from '@material-ui/icons/Add';
 import TabItem from '../../tabs/TabItem';
 import TabPanel from '../../tabs/TabPanel';
 import TabAddDialog from '../../tabs/TabAddDialog';
 import DmgCalcTab from '../dmg/DmgCalcTab';
-
-let renderCount = 0;
+import { LOCAL_STORAGE_DMG } from '../../../constants/const';
+import DmgCalcHome from './DmgCalcHome';
 
 const DmgCalcPage = ({ updateFormTab, addFormTab, removeFormTab, updateFormResults, formTabsState }) => {
     const [currentTab, setCurrentTab] = useState(0);
@@ -24,9 +25,13 @@ const DmgCalcPage = ({ updateFormTab, addFormTab, removeFormTab, updateFormResul
     }, [removingTab]);
 
     useEffect(() => {
-        localStorage.setItem('dmgFormTabsState', JSON.stringify(formTabsState));
+        localStorage.setItem(LOCAL_STORAGE_DMG, JSON.stringify(formTabsState));
     }, [formTabsState]);
 
+    const handleAdd = (title) => {
+        if (formTabsState.length === 0) setCurrentTab(0);
+        addFormTab(title);
+    };
     const handleChange = (event, newValue) => {
         setCurrentTab(newValue);
     };
@@ -50,13 +55,10 @@ const DmgCalcPage = ({ updateFormTab, addFormTab, removeFormTab, updateFormResul
         [updateFormTab]
     );
 
-    renderCount++;
-
-    return (
+    return !removingTab && formTabsState.length === 0 ? (
+        <DmgCalcHome handleAdd={handleAdd} />
+    ) : (
         <>
-            <span className='counter' style={{ position: 'fixed', top: 0, left: 0, zIndex: 9999 }}>
-                Render Count: {renderCount}
-            </span>
             <AppBar>
                 <Tabs
                     value={currentTab}
@@ -70,7 +72,14 @@ const DmgCalcPage = ({ updateFormTab, addFormTab, removeFormTab, updateFormResul
                         return <TabItem label={tab.title} index={index} key={index} handleRemove={handleRemove} />;
                     })}
                 </Tabs>
-                <TabAddDialog onAddTab={addFormTab} />
+                <TabAddDialog
+                    onAddTab={handleAdd}
+                    render={(style, handleClick) => (
+                        <Button className={style} color='secondary' onClick={handleClick}>
+                            <AddIcon />
+                        </Button>
+                    )}
+                />
             </AppBar>
             {!removingTab &&
                 formTabsState.map((tab, index) => {

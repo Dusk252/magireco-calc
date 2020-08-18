@@ -194,6 +194,11 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
                 ],
                 finalResults: [
                     {
+                        label: '補正ダメージ',
+                        value: totalDamage,
+                        precision: 0
+                    },
+                    {
                         label: '最終ダメージ MIN',
                         value: finalDamage.min,
                         precision: 0
@@ -214,7 +219,7 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
             <Box mt={3} mb={-1} mx={'auto'} pb={2} borderBottom='1px solid rgba(255, 255, 255, 0.3)'>
                 <Box display='inline-block' borderRight='1px solid rgba(255, 255, 255, 0.3)' pr={3} mr={3}>
                     <Typography variant='h4' component='span'>
-                        マギレコダメージ計算
+                        ダメージ計算
                     </Typography>
                 </Box>
                 <Typography variant='h5' component='span'>

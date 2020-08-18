@@ -8,19 +8,19 @@ export const MAX_DMG = 9999999;
 export const DISC_TYPE_DROPDOWN = [
     {
         value: DISC_TYPE.ACCELE,
-        text: 'アクセル'
+        text: 'Accele'
     },
     {
         value: DISC_TYPE.BLAST,
-        text: 'ブラスト'
+        text: 'Blast'
     },
     {
         value: DISC_TYPE.CHARGE,
-        text: 'チャージ'
+        text: 'Charge'
     },
     {
         value: DISC_TYPE.MAGIA,
-        text: 'マギア'
+        text: 'Magia'
     }
 ];
 
@@ -61,7 +61,7 @@ export const JINKEI_DROPDOWN = [
 export const QUEST_TYPE_OPTIONS = [
     {
         value: QUEST_TYPE.QUEST,
-        text: 'クエスト'
+        text: '通常クエスト'
     },
     {
         value: QUEST_TYPE.MIRRORS,

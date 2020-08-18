@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm, useFieldArray, useWatch, FormProvider } from 'react-hook-form';
 import PropTypes from 'prop-types';
 import { Grid, Typography, InputAdornment, Button, Collapse, makeStyles, Box } from '@material-ui/core';
@@ -74,6 +74,22 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
     formMethods.handleChange = handleChange;
 
     const watchDiscType = useWatch({ name: 'discType', control: formMethods.control, defaultValue: formValues.discType });
+    const watchBlastCombo = useWatch({
+        name: 'blastCombo',
+        control: formMethods.control,
+        defaultValue: formValues.blastCombo
+    });
+
+    const setValue = formMethods.setValue;
+    const getValues = formMethods.getValues;
+    useEffect(() => {
+        if (watchDiscType) {
+            if (watchDiscType !== constants.DISC_TYPE.BLAST && watchBlastCombo) {
+                setValue('blastCombo', false);
+                onFormChange(getValues(), index);
+            }
+        }
+    }, [watchDiscType, watchBlastCombo, setValue, getValues, onFormChange, index]);
 
     const memoriaFieldArrays = [
         {
@@ -92,6 +108,7 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
             }),
             name: 'dmgUpMemoria',
             label: '与えるダメージUP',
+            //dropNumber: 6
             dropNumber: 10
         },
         {
@@ -101,6 +118,7 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
             }),
             name: 'dmgUpJoutaiMemoria',
             label: 'ダメージアップ状態',
+            //dropNumber: 8
             dropNumber: 10
         },
         {
@@ -110,6 +128,7 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
             }),
             name: 'joutaiIjouDmgUpMemoria',
             label: '敵状態異常時ダメージUP',
+            //dropNumber: 6
             dropNumber: 10
         },
         {
@@ -119,6 +138,7 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
             }),
             name: 'defHoseiMemoria',
             label: '防御力DOWN',
+            //dropNumber: 9
             dropNumber: 10
         },
         {
@@ -128,6 +148,7 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
             }),
             name: 'blastDmgUpMemoria',
             label: 'Blast ダメージUP',
+            //dropNumber: 9
             dropNumber: 10
         },
         {
@@ -137,6 +158,7 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
             }),
             name: 'chargeGoDmgUpMemoria',
             label: 'Charge後ダメージUP',
+            //dropNumber: 5
             dropNumber: 10
         },
         {
@@ -155,6 +177,7 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
             }),
             name: 'doppelDmgUp',
             label: 'ドッペルダメージUP',
+            //dropNumber: 5
             dropNumber: 10
         }
     ];
@@ -529,7 +552,7 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
                                         endAdornment: <InputAdornment position='end'>%</InputAdornment>
                                     }}
                                     inputProps={{
-                                        maxLength: 4
+                                        maxLength: 6
                                     }}
                                 />
                             </Grid>
@@ -608,7 +631,7 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
                                         endAdornment: <InputAdornment position='end'>%</InputAdornment>
                                     }}
                                     inputProps={{
-                                        maxLength: 3
+                                        maxLength: 6
                                     }}
                                 />
                             </Grid>

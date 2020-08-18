@@ -18,12 +18,23 @@ export const theme = createMuiTheme({
         MuiAppBar: {
             root: {
                 flexDirection: 'row',
+                alignItems: 'center',
                 '&& a': {
                     padding: '16px'
                 }
             },
             positionFixed: {
                 top: 'auto'
+            }
+        },
+        MuiTabs: {
+            root: {
+                minHeight: '40px'
+            }
+        },
+        MuiTab: {
+            root: {
+                minHeight: '40px'
             }
         },
         MuiTabScrollButton: {

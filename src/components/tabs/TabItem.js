@@ -6,7 +6,7 @@ import CloseIcon from '@material-ui/icons/Close';
 const useStyles = makeStyles((theme) => ({
     tab: {
         textAlign: 'left',
-        height: '48px',
+        height: '40px',
         '&& span': {
             alignItems: 'flex-start'
         }
@@ -14,11 +14,15 @@ const useStyles = makeStyles((theme) => ({
     iconButton: {
         backgroundColor: theme.palette.primary.light,
         color: theme.palette.common.white,
+        fontSize: '1.1rem',
         '&:hover': {
             backgroundColor: theme.palette.primary.dark,
             color: theme.palette.common.white
         },
         padding: theme.spacing(0.5)
+    },
+    svgIcon: {
+        fontSize: '1.1rem'
     }
 }));
 
@@ -33,7 +37,7 @@ const TabItem = ({ label, index, handleRemove, ...a11yProps }) => {
                     handleRemove(index);
                 }}
             >
-                <CloseIcon />
+                <CloseIcon className={classes.svgIcon} />
             </IconButton>
         </div>
     );

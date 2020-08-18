@@ -1,3 +1,6 @@
+export const LOCAL_STORAGE_MP = 'mpFormTabsState';
+export const LOCAL_STORAGE_DMG = 'dmgFormTabsState';
+
 export const ROMAN_NUMERALS = {
     1: 'I',
     2: 'II',

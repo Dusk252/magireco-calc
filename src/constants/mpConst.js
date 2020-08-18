@@ -85,14 +85,14 @@ export const CHAR_TYPE_DROPDOWN = [
 export const DISC_TYPE_DROPDOWN = [
     {
         value: DISC_TYPE.ACCELE,
-        text: 'アクセル'
+        text: 'Accele'
     },
     {
         value: DISC_TYPE.BLAST,
-        text: 'ブラスト'
+        text: 'Blast'
     },
     {
         value: DISC_TYPE.CHARGE,
-        text: 'チャージ'
+        text: 'Charge'
     }
 ];

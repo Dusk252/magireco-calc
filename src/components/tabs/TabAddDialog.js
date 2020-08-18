@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles, Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -10,11 +9,12 @@ const useStyles = makeStyles((theme) => ({
         '&:hover': {
             backgroundColor: theme.palette.primary.dark
         },
-        borderRadius: 0
+        borderRadius: 0,
+        height: '40px'
     }
 }));
 
-const TabAddDialog = ({ onAddTab }) => {
+const TabAddDialog = ({ onAddTab, render }) => {
     const [open, setOpen] = React.useState(false);
     const [title, setTitle] = React.useState('');
 
@@ -38,9 +38,7 @@ const TabAddDialog = ({ onAddTab }) => {
 
     return (
         <>
-            <Button className={classes.root} color='secondary' onClick={handleClickOpen}>
-                <AddIcon />
-            </Button>
+            {render(classes.root, handleClickOpen)}
             <Dialog open={open} onClose={handleCancel} aria-labelledby='form-dialog-title'>
                 <form onSubmit={handleAdd} autoComplete='off'>
                     <DialogTitle id='form-dialog-title'>Add Tab</DialogTitle>
@@ -74,7 +72,8 @@ const TabAddDialog = ({ onAddTab }) => {
 };
 
 TabAddDialog.propTypes = {
-    onAddTab: PropTypes.func.isRequired
+    onAddTab: PropTypes.func.isRequired,
+    render: PropTypes.func.isRequired
 };
 
 export default TabAddDialog;

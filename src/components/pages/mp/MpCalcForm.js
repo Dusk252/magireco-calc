@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm, useWatch, useFieldArray, FormProvider } from 'react-hook-form';
 import PropTypes from 'prop-types';
 import { Grid, Button, InputAdornment, makeStyles } from '@material-ui/core';
@@ -53,8 +53,18 @@ const MpCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
     const watchDiscInfo = useWatch({
         name: ['discType', 'discSlot'],
         control: formMethods.control,
-        defaultValue: formValues.discType
+        defaultValue: { discType: formValues.discType, discSlot: formValues.discSlot }
     });
+
+    const setValue = formMethods.setValue;
+    const getValues = formMethods.getValues;
+    useEffect(() => {
+        if (watchDiscInfo.discSlot == 1) {
+            if (watchDiscInfo.discType === constants.DISC_TYPE.ACCELE) setValue('acceleBonus', true);
+            else setValue('acceleBonus', false);
+            onFormChange(getValues(), index);
+        }
+    }, [watchDiscInfo, setValue, getValues, onFormChange, index]);
 
     const memoriaFieldArrays = [
         {
@@ -218,7 +228,7 @@ const MpCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
                                     endAdornment: <InputAdornment position='end'>%</InputAdornment>
                                 }}
                                 inputProps={{
-                                    maxLength: 3
+                                    maxLength: 6
                                 }}
                             />
                         </Grid>
@@ -236,7 +246,7 @@ const MpCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
                                     endAdornment: <InputAdornment position='end'>%</InputAdornment>
                                 }}
                                 inputProps={{
-                                    maxLength: 3
+                                    maxLength: 6
                                 }}
                             />
                         </Grid>
