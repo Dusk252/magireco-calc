@@ -3,6 +3,11 @@ export const atkUp = (effectLvl) => {
     return effectLvl * 0.05;
 };
 
+//瀕死時攻撃力UP
+export const hinshiAtkUp = (effectLvl) => {
+    return effectLvl * 0.05 + 0.05;
+};
+
 //防御力DOWN
 export const defDown = (effectLvl) => {
     return effectLvl * 0.05;
@@ -39,8 +44,8 @@ export const mpUp = (effectLvl) => {
 };
 
 //弱点属性MPUP倍率
-export const mpUpDef = (effectLvl) => {
-    return effectLvl * 0.25 + 0.25;
+export const mpUpDefWeak = (effectLvl) => {
+    return effectLvl * 0.01 + 0.01;
 };
 
 //ダメージアップ状態

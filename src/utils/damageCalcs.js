@@ -102,8 +102,8 @@ export const dmgHoseiTotal = (
     isDoppel,
     isJoutaiIjou,
     discType,
-    blastDmgUp
-    //chargeDmgUp
+    blastDmgUp,
+    chargeDmgUp
 ) => {
     return (
         1 +
@@ -112,9 +112,9 @@ export const dmgHoseiTotal = (
         (discType === DISC_TYPE.BLAST
             ? Math.min(Math.max(blastDmgUp, KYOUKA_LIMITS.blastDmgUpHosei.min), KYOUKA_LIMITS.blastDmgUpHosei.max)
             : 0) +
-        // (discType === 'charge'
-        //     ? Math.min(Math.max(chargeDmgUp, KYOUKA_LIMITS.chargeDmgUpHosei.min), KYOUKA_LIMITS.chargeDmgUpHosei.max)
-        //     : 0) +
+        (discType === DISC_TYPE.CHARGE
+            ? Math.min(Math.max(chargeDmgUp, KYOUKA_LIMITS.chargeDmgUpHosei.min), KYOUKA_LIMITS.chargeDmgUpHosei.max)
+            : 0) +
         (isJoutaiIjou ? joutaiIjouDmgUpHosei : 0) +
         (isDoppel ? Math.min(Math.max(doppelHosei, KYOUKA_LIMITS.doppelHosei.min), KYOUKA_LIMITS.doppelHosei.max) : 0)
     );

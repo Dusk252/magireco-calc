@@ -167,16 +167,16 @@ describe('MP calculations module', function () {
     });
 
     it('correctly calculates the MP on defense', function () {
-        const targetFuncCaller = ({ charType, mpUp, mpUpDef, questType }) => {
-            return mpCalcs.mpCalcOnDef(charType, mpUp, mpUpDef, questType);
+        const targetFuncCaller = ({ charType, mpUp, mpUpDefWeak, questType }) => {
+            return mpCalcs.mpCalcOnDef(charType, mpUp, mpUpDefWeak, questType);
         };
 
         const inputs = [
-            { charType: 'magia', mpUp: 0, mpUpDef: 0, questType: QUEST_TYPE.QUEST },
-            { charType: 'attack', mpUp: 0.5, mpUpDef: 0.9, questType: QUEST_TYPE.QUEST },
-            { charType: 'balance', mpUp: 0, mpUpDef: 0, questType: QUEST_TYPE.MIRRORS },
-            { charType: 'defense', mpUp: 0, mpUpDef: 0.5, questType: QUEST_TYPE.QUEST },
-            { charType: 'heal', mpUp: 0.6, mpUpDef: 0, questType: QUEST_TYPE.QUEST }
+            { charType: 'magia', mpUp: 0, mpUpDefWeak: 0, questType: QUEST_TYPE.QUEST },
+            { charType: 'attack', mpUp: 0.5, mpUpDefWeak: 0.9, questType: QUEST_TYPE.QUEST },
+            { charType: 'balance', mpUp: 0, mpUpDefWeak: 0, questType: QUEST_TYPE.MIRRORS },
+            { charType: 'defense', mpUp: 0, mpUpDefWeak: 0.5, questType: QUEST_TYPE.QUEST },
+            { charType: 'heal', mpUp: 0.6, mpUpDefWeak: 0, questType: QUEST_TYPE.QUEST }
         ];
 
         const expectedOutputs = [4 * 1.2, 4 * 0.8 * 1.5 * 1.9, 6 * 0.9, 4 * 1 * 1.5, 4 * 1.2 * 1.6];

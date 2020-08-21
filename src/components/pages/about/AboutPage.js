@@ -10,12 +10,16 @@ const AboutPage = () => {
                 </Typography>
             </Box>
             <Typography variant='body1' component='div' align='left'>
-                <p>
-                    マギレコ検証派の皆様が苦労して明らかにさせた情報を使って計算機を作ってみました。このウェブサイトができたのはその皆様のおかげだと言うべきと思います。
-                </p>
-                <p>
-                    間違いがあった場合、私の解釈違いか力不足ゆえのバーグが原因である可能性は高いので是非教えてください。（誤字とかもお願いします。）
-                </p>
+                <p>建設中</p>
+            </Typography>
+            <Box my={3} mx={'auto'} pb={2} borderBottom='1px solid rgba(255, 255, 255, 0.3)'>
+                <Typography variant='h4' component='div' align='center'>
+                    About
+                </Typography>
+            </Box>
+            <Typography variant='body1' component='div' align='left'>
+                <p>マギレコ検証派の皆様が苦労して明らかにさせた情報を私的の情報収集と照り合わせて計算機を作ってみました。</p>
+                <p>計算間違いや誤字が見つかったら是非教えてください。</p>
             </Typography>
 
             <Box mt={4} mb={2}>
@@ -25,7 +29,7 @@ const AboutPage = () => {
             </Box>
             <Typography variant='body1' component='div' align='left'>
                 <p>
-                    通常クエストとミラーズでのダメージ計算式、MP計算式、そしてメモリアとコネクトの効果量に関しては概ね
+                    通常クエストとミラーズでのダメージ計算式、MP計算式、そして一部のメモリアとコネクトの効果量に関しては概ね
                     <Link
                         href='http://aruma160114.com/magireco/?%E3%83%80%E3%83%A1%E3%83%BC%E3%82%B8%E8%A8%88%E7%AE%97%E5%BC%8F%E8%A9%B3%E7%B4%B0'
                         target='_blank'
@@ -59,8 +63,8 @@ const AboutPage = () => {
                 <ul>
                     <li>逆算昨日 - 個人的には相当便利になる機能で優先したいポイントです</li>
                     <li>防御時のMP獲得量 - 簡単な計算でそんなに必要ないと思いますがあるに越したことはないという感じかな</li>
-                    <li>チャージディスクダメージUP - これは実は数字が全然見つからなくて外しました</li>
                     <li>英語版</li>
+                    <li>キャラを直接選択する機能とかも考え中です</li>
                 </ul>
             </Typography>
 

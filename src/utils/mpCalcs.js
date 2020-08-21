@@ -36,6 +36,6 @@ export const mpCalc = (acceleBonus, mirrors, discSlot, discType, charType, mpUp,
     );
 };
 
-export const mpCalcOnDef = (charType, mpUp, mpUpDef, questType) => {
-    return (questType === QUEST_TYPE.MIRRORS ? 6 : 4) * CHAR_TYPES_MP_MOD_DEF[charType] * (1 + mpUp) * (1 + mpUpDef);
+export const mpCalcOnDef = (charType, mpUp, mpUpDefWeak, questType) => {
+    return (questType === QUEST_TYPE.MIRRORS ? 6 : 4) * CHAR_TYPES_MP_MOD_DEF[charType] * (1 + mpUp) * (1 + mpUpDefWeak);
 };

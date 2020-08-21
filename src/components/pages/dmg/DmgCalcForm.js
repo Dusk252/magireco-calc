@@ -79,6 +79,11 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
         control: formMethods.control,
         defaultValue: formValues.blastCombo
     });
+    const watchQuestType = useWatch({
+        name: 'questType',
+        control: formMethods.control,
+        defaultValues: formValues.questType
+    });
 
     const setValue = formMethods.setValue;
     const getValues = formMethods.getValues;
@@ -99,7 +104,7 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
             }),
             name: 'atkHoseiMemoria',
             label: '攻撃力UP',
-            dropNumber: 10
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
         },
         {
             array: useFieldArray({
@@ -109,7 +114,7 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
             name: 'dmgUpMemoria',
             label: '与えるダメージUP',
             //dropNumber: 6
-            dropNumber: 10
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
         },
         {
             array: useFieldArray({
@@ -119,7 +124,7 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
             name: 'dmgUpJoutaiMemoria',
             label: 'ダメージアップ状態',
             //dropNumber: 8
-            dropNumber: 10
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
         },
         {
             array: useFieldArray({
@@ -129,7 +134,7 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
             name: 'joutaiIjouDmgUpMemoria',
             label: '敵状態異常時ダメージUP',
             //dropNumber: 6
-            dropNumber: 10
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
         },
         {
             array: useFieldArray({
@@ -139,7 +144,7 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
             name: 'defHoseiMemoria',
             label: '防御力DOWN',
             //dropNumber: 9
-            dropNumber: 10
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
         },
         {
             array: useFieldArray({
@@ -149,7 +154,7 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
             name: 'blastDmgUpMemoria',
             label: 'Blast ダメージUP',
             //dropNumber: 9
-            dropNumber: 10
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
         },
         {
             array: useFieldArray({
@@ -159,7 +164,7 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
             name: 'chargeGoDmgUpMemoria',
             label: 'Charge後ダメージUP',
             //dropNumber: 5
-            dropNumber: 10
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
         },
         {
             array: useFieldArray({
@@ -168,18 +173,17 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
             }),
             name: 'magiaDmgUpMemoria',
             label: 'マギアダメージUP',
-            dropNumber: 10
-        },
-        {
-            array: useFieldArray({
-                control: formMethods.control,
-                name: 'doppelDmgUp'
-            }),
-            name: 'doppelDmgUp',
-            label: 'ドッペルダメージUP',
-            //dropNumber: 5
-            dropNumber: 10
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
         }
+        // {
+        //     array: useFieldArray({
+        //         control: formMethods.control,
+        //         name: 'hinshijiAtkUpMemoria'
+        //     }),
+        //     name: 'hinshijiAtkUpMemoria',
+        //     label: '瀕死時攻撃力UP',
+        //     optionValues: Array.from(Array(10), (_, i) => i + 1)
+        // }
     ];
 
     const connectFieldArrays = [
@@ -190,7 +194,7 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
             }),
             name: 'atkHoseiConnect',
             label: '攻撃力UP',
-            dropNumber: 10
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
         },
         {
             array: useFieldArray({
@@ -199,7 +203,7 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
             }),
             name: 'dmgUpConnect',
             label: '与えるダメージUP',
-            dropNumber: 10
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
         },
         {
             array: useFieldArray({
@@ -208,7 +212,7 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
             }),
             name: 'joutaiIjouDmgUpConnect',
             label: '敵状態異常時ダメージUP',
-            dropNumber: 10
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
         },
         {
             array: useFieldArray({
@@ -217,7 +221,7 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
             }),
             name: 'defHoseiConnect',
             label: '防御力DOWN',
-            dropNumber: 10
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
         },
         {
             array: useFieldArray({
@@ -226,7 +230,7 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
             }),
             name: 'blastDmgUpConnect',
             label: 'Blast ダメージUP',
-            dropNumber: 10
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
         },
         {
             array: useFieldArray({
@@ -235,7 +239,7 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
             }),
             name: 'chargeGoDmgUpConnect',
             label: 'Charge後ダメージUP',
-            dropNumber: 10
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
         },
         {
             array: useFieldArray({
@@ -244,8 +248,149 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
             }),
             name: 'magiaDmgUpConnect',
             label: 'マギアダメージUP',
-            dropNumber: 10
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
         }
+    ];
+
+    const seishinKyoukaArrays = [
+        {
+            array: useFieldArray({
+                control: formMethods.control,
+                name: 'atkHoseiSkill'
+            }),
+            name: 'atkHoseiSkill',
+            label: '攻撃力UP',
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
+        },
+        {
+            array: useFieldArray({
+                control: formMethods.control,
+                name: 'dmgUpSkill'
+            }),
+            name: 'dmgUpSkill',
+            label: '与えるダメージUP',
+            //dropNumber: 6
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
+        },
+        {
+            array: useFieldArray({
+                control: formMethods.control,
+                name: 'dmgUpJoutaiSkill'
+            }),
+            name: 'dmgUpJoutaiSkill',
+            label: 'ダメージアップ状態',
+            //dropNumber: 8
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
+        },
+        {
+            array: useFieldArray({
+                control: formMethods.control,
+                name: 'joutaiIjouDmgUpSkill'
+            }),
+            name: 'joutaiIjouDmgUpSkill',
+            label: '敵状態異常時ダメージUP',
+            //dropNumber: 6
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
+        },
+        {
+            array: useFieldArray({
+                control: formMethods.control,
+                name: 'defHoseiSkill'
+            }),
+            name: 'defHoseiSkill',
+            label: '防御力DOWN',
+            //dropNumber: 9
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
+        },
+        {
+            array: useFieldArray({
+                control: formMethods.control,
+                name: 'chargeDiscDmgUpSkill'
+            }),
+            name: 'chargeDiscDmgUpSkill',
+            label: 'ChargeディスクダメージUP',
+            //dropNumber: 9
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
+        },
+        {
+            array: useFieldArray({
+                control: formMethods.control,
+                name: 'blastDmgUpSkill_Ability'
+            }),
+            name: 'blastDmgUpSkill_Ability',
+            label: 'Blast ダメージUP（アビリティ）',
+            //dropNumber: 9
+            optionValues: [2, 3, 4],
+            defaultValue: '2'
+        },
+        {
+            array: useFieldArray({
+                control: formMethods.control,
+                name: 'blastDmgUpSkill_Skill'
+            }),
+            name: 'blastDmgUpSkill_Skill',
+            label: 'Blast ダメージUP（スキル）',
+            //dropNumber: 9
+            optionValues: [3, 5, 6, 9],
+            defaultValue: '3'
+        },
+        {
+            array: useFieldArray({
+                control: formMethods.control,
+                name: 'chargeGoDmgUpSkill_Ability'
+            }),
+            name: 'chargeGoDmgUpSkill_Ability',
+            label: 'Charge後ダメージUP（アビリティ）',
+            //dropNumber: 5
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
+        },
+        {
+            array: useFieldArray({
+                control: formMethods.control,
+                name: 'chargeGoDmgUpSkill_Skill'
+            }),
+            name: 'chargeGoDmgUpSkill_Skill',
+            label: 'Charge後ダメージUP（スキル）',
+            //dropNumber: 5
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
+        },
+        {
+            array: useFieldArray({
+                control: formMethods.control,
+                name: 'magiaDmgUpSkill'
+            }),
+            name: 'magiaDmgUpSkill',
+            label: 'マギアダメージUP',
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
+        },
+        {
+            array: useFieldArray({
+                control: formMethods.control,
+                name: 'doppelDmgUpSkill'
+            }),
+            name: 'doppelDmgUpSkill',
+            label: 'ドッペルダメージUP',
+            //dropNumber: 5
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
+        }
+        // {
+        //     array: useFieldArray({
+        //         control: formMethods.control,
+        //         name: 'hinshijiAtkUpSkill'
+        //     }),
+        //     name: 'hinshijiAtkUpSkill',
+        //     label: '瀕死時攻撃力UP',
+        //     optionValues: Array.from(Array(10), (_, i) => i + 1)
+        // },
+        // {
+        //     array: useFieldArray({
+        //         control: formMethods.control,
+        //         name: 'antiWitchDmgUpSkill'
+        //     }),
+        //     name: 'antiWitchDmgUpSkill',
+        //     label: '対魔女ダメージアップ',
+        //     optionValues: Array.from(Array(10), (_, i) => i + 1)
+        // }
     ];
 
     const percentageFields = [
@@ -523,6 +668,17 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
                                 disabled={watchDiscType === constants.DISC_TYPE.MAGIA}
                             />
                         </Grid>
+                        {watchQuestType === constants.QUEST_TYPE.KIMOCHISEN ? (
+                            <Grid item xs={12}>
+                                <Box px={2}>
+                                    <Typography variant='body2'>
+                                        *キモチ戦では不確かな数字があるため結果が若干ズレることがあります。
+                                    </Typography>
+                                </Box>
+                            </Grid>
+                        ) : (
+                            ''
+                        )}
                     </Grid>
                     <Collapse in={watchDiscType === constants.DISC_TYPE.MAGIA} timeout='auto'>
                         <Box pt={3} pb={0} mb={3} borderBottom={'1px solid rgba(255,255,255,.5)'}>
@@ -578,13 +734,13 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
                                 <FieldArrayElement key={index} fieldArray={element.array} index={index}>
                                     <SelectInput
                                         name={`${element.name}[${index}].amount`}
-                                        options={Array.from(Array(element.dropNumber), (_, i) => {
+                                        options={Array.from(element.optionValues, (i) => {
                                             return {
-                                                value: (i + 1).toString(),
-                                                text: element.label + constants.ROMAN_NUMERALS[i + 1]
+                                                value: i.toString(),
+                                                text: element.label + ' ' + constants.ROMAN_NUMERALS[i]
                                             };
                                         })}
-                                        defaultValue={'1'}
+                                        defaultValue={element.defaultValue ?? '1'}
                                     />
                                 </FieldArrayElement>
                             ))}
@@ -598,13 +754,38 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
                                 <FieldArrayElement key={index} fieldArray={element.array} index={index}>
                                     <SelectInput
                                         name={`${element.name}[${index}].amount`}
-                                        options={Array.from(Array(element.dropNumber), (_, i) => {
+                                        options={Array.from(element.optionValues, (i) => {
                                             return {
-                                                value: (i + 1).toString(),
-                                                text: element.label + constants.ROMAN_NUMERALS[i + 1]
+                                                value: i.toString(),
+                                                text: element.label + ' ' + constants.ROMAN_NUMERALS[i]
                                             };
                                         })}
-                                        defaultValue={'1'}
+                                        defaultValue={element.defaultValue ?? '1'}
+                                    />
+                                </FieldArrayElement>
+                            ))}
+                        </FieldArrayWrapper>
+                    ))}
+                </FormSection>
+                <FormSection title='精神強化' collapse open={seishinKyoukaArrays.some((el) => el.array.fields.length > 0)}>
+                    <Box px={2}>
+                        <Typography variant='body2'>
+                            *BlastダメージUPとCharge後ダメージUPの場合はスキルとアビリティの数字が異なっていますのでご注意してください。
+                        </Typography>
+                    </Box>
+                    {seishinKyoukaArrays.map((element, index) => (
+                        <FieldArrayWrapper key={index} name={element.name} label={element.label} fieldArray={element.array}>
+                            {element.array.fields.map((field, index) => (
+                                <FieldArrayElement key={index} fieldArray={element.array} index={index}>
+                                    <SelectInput
+                                        name={`${element.name}[${index}].amount`}
+                                        options={Array.from(element.optionValues, (i) => {
+                                            return {
+                                                value: i.toString(),
+                                                text: element.label + ' ' + constants.ROMAN_NUMERALS[i]
+                                            };
+                                        })}
+                                        defaultValue={element.defaultValue ?? '1'}
                                     />
                                 </FieldArrayElement>
                             ))}

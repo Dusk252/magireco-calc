@@ -6,6 +6,7 @@ import * as dmgConstants from '../../../constants/dmgConst';
 import * as dmgCalcs from '../../../utils/damageCalcs';
 import * as memoriaCalcs from '../../../utils/memoriaCalcs';
 import * as connectCalcs from '../../../utils/connectCalcs';
+import * as seishinKyoukaCalcs from '../../../utils/seishinKyoukaCalcs';
 import ResultsDisplay from '../../forms/ResultsDisplay';
 import DmgCalcForm from './DmgCalcForm';
 import { firebaseLogEvent } from '../../../firebaseHelper';
@@ -28,10 +29,13 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
         const atkHosei = dmgCalcs.atkHosei(
             reduceIfExists(data.atkHoseiMemoria, memoriaCalcs.atkUp) +
                 reduceIfExists(data.atkHoseiConnect, connectCalcs.atkUp) +
+                reduceIfExists(data.atkHoseiSkill, seishinKyoukaCalcs.atkUp) +
                 Number(data.atkUpPa) * 0.01
         );
         const defHosei = dmgCalcs.defHosei(
-            reduceIfExists(data.defHoseiMemoria, memoriaCalcs.defDown) + Number(data.defDownPa) * 0.01
+            reduceIfExists(data.defHoseiMemoria, memoriaCalcs.defDown) +
+                reduceIfExists(data.defHoseiSkill, seishinKyoukaCalcs.defDown) +
+                Number(data.defDownPa) * 0.01
         );
         const jikkouAtk = dmgCalcs.jikkouAtk(
             atkHosei,
@@ -51,27 +55,38 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
         const dmgUpHosei = dmgCalcs.dmgUpHosei(
             reduceIfExists(data.dmgUpMemoria, memoriaCalcs.dealtDmgUp) +
                 reduceIfExists(data.dmgUpConnect, connectCalcs.dealtDmgUp) +
+                reduceIfExists(data.dmgUpSkill, seishinKyoukaCalcs.dealtDmgUp) +
                 Number(data.dmgUpPa) * 0.01
         );
         const magiaDmgHosei = dmgCalcs.magiaHosei(
             reduceIfExists(data.magiaDmgUpMemoria, memoriaCalcs.magiaDmgUp) +
                 reduceIfExists(data.magiaDmgUpConnect, connectCalcs.magiaDmgUp) +
+                reduceIfExists(data.magiaDmgUpSkill, seishinKyoukaCalcs.magiaDmgUp) +
                 Number(data.magiaDmgUpPa) * 0.01
         );
-        const doppelDmgHosei = reduceIfExists(data.doppelDmgUp, memoriaCalcs.magiaDmgUp) + Number(data.doppelDmgUpPa) * 0.01;
+        const doppelDmgHosei =
+            reduceIfExists(data.doppelDmgUpSkill, seishinKyoukaCalcs.doppelDmgUp) + Number(data.doppelDmgUpPa) * 0.01;
         const dmgUpJoutaiHosei =
-            reduceIfExists(data.dmgUpJoutaiMemoria, memoriaCalcs.damageUp) + Number(data.dmgUpJoutaiPa) * 0.01;
+            reduceIfExists(data.dmgUpJoutaiMemoria, memoriaCalcs.damageUp) +
+            reduceIfExists(data.dmgUpJoutaiSkill, seishinKyoukaCalcs.damageUp) +
+            Number(data.dmgUpJoutaiPa) * 0.01;
         const joutaiIjouDmgUp =
             reduceIfExists(data.joutaiIjouDmgUpMemoria, memoriaCalcs.joutaiIjouDmgUp) +
             reduceIfExists(data.joutaiIjouDmgUpConnect, connectCalcs.joutaiIjouDmgUp) +
+            reduceIfExists(data.joutaiIjouDmgUpSkill, seishinKyoukaCalcs.joutaiIjouDmgUp) +
             Number(data.joutaiIjouDmgUpPa) * 0.01;
         const blastDmgUp =
             reduceIfExists(data.blastDmgUpMemoria, memoriaCalcs.blastDmgUp) +
             reduceIfExists(data.blastDmgUpConnect, connectCalcs.blastDmgUp) +
+            reduceIfExists(data.blastDmgUpSkill_Skill, seishinKyoukaCalcs.blastDmgUpSkill) +
+            reduceIfExists(data.blastDmgUpSkill_Ability, seishinKyoukaCalcs.blastDmgUpAbility) +
             Number(data.blastDmgUpPa) * 0.01;
+        const chargeDmgUp = reduceIfExists(data.chargeDiscDmgUpSkill, seishinKyoukaCalcs.chargeDiscDmgUp);
         const chargeGoDmgUp =
             reduceIfExists(data.chargeGoDmgUpMemoria, memoriaCalcs.chargeGoDmgUp) +
             reduceIfExists(data.chargeGoDmgUpConnect, connectCalcs.chargeGoDmgUp) +
+            reduceIfExists(data.chargeGoDmgUpSkill_Skill, seishinKyoukaCalcs.chargeGoDmgUpSkill) +
+            reduceIfExists(data.chargeGoDmgUpSkill_Ability, seishinKyoukaCalcs.chargeGoDmgUpAbility) +
             Number(data.chargeGoDmgUpPa) * 0.01;
 
         const dmgHosei = dmgCalcs.dmgHoseiTotal(
@@ -82,7 +97,8 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
             data.isMagiaOrDoppel === constants.DISC_TYPE.DOPPEL,
             data.joutaiIjou,
             data.discType,
-            blastDmgUp
+            blastDmgUp,
+            chargeDmgUp
         );
         const baseDamage = dmgCalcs.baseDmg(jikkouAtk, jikkouDef);
 

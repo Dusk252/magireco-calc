@@ -3,6 +3,11 @@ import PropTypes from 'prop-types';
 import { Container, Box, Typography } from '@material-ui/core';
 import { mpUp as mpUpMemoriaCalc, acceleMpUp as acceleMpUpMemoriaCalc } from '../../../utils/memoriaCalcs';
 import { mpUp as mpUpConnectCalc, acceleMpUp as acceleMpUpConnectCalc } from '../../../utils/connectCalcs';
+import {
+    mpUp as mpUpSkillCalc,
+    mpUpOver100 as mpUpOver100SkillCalc,
+    acceleMpUp as acceleMpUpSkillCalc
+} from '../../../utils/seishinKyoukaCalcs';
 import { mpCalc } from '../../../utils/mpCalcs';
 import ResultsDisplay from '../../forms/ResultsDisplay';
 import MpCalcForm from './MpCalcForm';
@@ -26,11 +31,14 @@ const MpCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
         const acceleMpUpPa =
             Number(data.acceleMpUpPa) * 0.01 +
             reduceIfExists(data.acceleMpUpMemoria, acceleMpUpMemoriaCalc) +
-            reduceIfExists(data.acceleMpUpConnects, acceleMpUpConnectCalc);
+            reduceIfExists(data.acceleMpUpConnects, acceleMpUpConnectCalc) +
+            reduceIfExists(data.acceleMpUpSkill, acceleMpUpSkillCalc);
         const mpUpPa =
             Number(data.mpUpPa) * 0.01 +
             reduceIfExists(data.mpUpMemoria, mpUpMemoriaCalc) +
-            reduceIfExists(data.mpUpConnects, mpUpConnectCalc);
+            reduceIfExists(data.mpUpConnects, mpUpConnectCalc) +
+            reduceIfExists(data.mpUpSkill, mpUpSkillCalc) +
+            (data.mpOver100 ? Number(data.mpUpPa) * 0.01 + reduceIfExists(data.mpUpOver100Skill, mpUpOver100SkillCalc) : 0);
         const mpTotal = mpCalc(
             data.acceleBonus,
             data.mirrors,

@@ -241,7 +241,8 @@ describe('Damage calculations module', function () {
             isDoppel,
             isJoutaiIjou,
             discType,
-            blastDmgUp
+            blastDmgUp,
+            chargeDmgUp
         }) => {
             return dmgCalcs.dmgHoseiTotal(
                 dmgUpHosei,
@@ -251,7 +252,8 @@ describe('Damage calculations module', function () {
                 isDoppel,
                 isJoutaiIjou,
                 discType,
-                blastDmgUp
+                blastDmgUp,
+                chargeDmgUp
             );
         };
 
@@ -264,7 +266,8 @@ describe('Damage calculations module', function () {
                 isDoppel: false,
                 isJoutaiIjou: false,
                 discType: DISC_TYPE.ACCELE,
-                blastDmgUp: 0
+                blastDmgUp: 0,
+                chargeDmgUp: 0
             },
             {
                 dmgUpHosei: 0,
@@ -274,7 +277,8 @@ describe('Damage calculations module', function () {
                 isDoppel: false,
                 isJoutaiIjou: false,
                 discType: DISC_TYPE.ACCELE,
-                blastDmgUp: 0.5
+                blastDmgUp: 0.5,
+                chargeDmgUp: 0
             },
             {
                 dmgUpHosei: 0,
@@ -284,7 +288,8 @@ describe('Damage calculations module', function () {
                 isDoppel: false,
                 isJoutaiIjou: false,
                 discType: DISC_TYPE.BLAST,
-                blastDmgUp: 0.5
+                blastDmgUp: 0.5,
+                chargeDmgUp: 0
             },
             {
                 dmgUpHosei: 1,
@@ -294,7 +299,8 @@ describe('Damage calculations module', function () {
                 isDoppel: false,
                 isJoutaiIjou: false,
                 discType: DISC_TYPE.ACCELE,
-                blastDmgUp: 0
+                blastDmgUp: 0,
+                chargeDmgUp: 0
             },
             {
                 dmgUpHosei: 2,
@@ -304,7 +310,8 @@ describe('Damage calculations module', function () {
                 isDoppel: false,
                 isJoutaiIjou: false,
                 discType: DISC_TYPE.ACCELE,
-                blastDmgUp: 0
+                blastDmgUp: 0,
+                chargeDmgUp: 0
             },
             {
                 dmgUpHosei: 0,
@@ -314,7 +321,8 @@ describe('Damage calculations module', function () {
                 isDoppel: false,
                 isJoutaiIjou: false,
                 discType: DISC_TYPE.ACCELE,
-                blastDmgUp: 0
+                blastDmgUp: 0,
+                chargeDmgUp: 0
             },
             {
                 dmgUpHosei: 1,
@@ -324,7 +332,8 @@ describe('Damage calculations module', function () {
                 isDoppel: false,
                 isJoutaiIjou: false,
                 discType: DISC_TYPE.ACCELE,
-                blastDmgUp: 0
+                blastDmgUp: 0,
+                chargeDmgUp: 0
             },
             {
                 dmgUpHosei: 1,
@@ -334,7 +343,8 @@ describe('Damage calculations module', function () {
                 isDoppel: false,
                 isJoutaiIjou: false,
                 discType: DISC_TYPE.ACCELE,
-                blastDmgUp: 0
+                blastDmgUp: 0,
+                chargeDmgUp: 0
             },
             {
                 dmgUpHosei: 1,
@@ -344,7 +354,8 @@ describe('Damage calculations module', function () {
                 isDoppel: false,
                 isJoutaiIjou: true,
                 discType: DISC_TYPE.ACCELE,
-                blastDmgUp: 0
+                blastDmgUp: 0,
+                chargeDmgUp: 0
             },
             {
                 dmgUpHosei: 1,
@@ -354,7 +365,8 @@ describe('Damage calculations module', function () {
                 isDoppel: true,
                 isJoutaiIjou: true,
                 discType: DISC_TYPE.MAGIA,
-                blastDmgUp: 1
+                blastDmgUp: 1,
+                chargeDmgUp: 0
             },
             {
                 dmgUpHosei: 1,
@@ -364,7 +376,8 @@ describe('Damage calculations module', function () {
                 isDoppel: false,
                 isJoutaiIjou: false,
                 discType: DISC_TYPE.ACCELE,
-                blastDmgUp: 0
+                blastDmgUp: 0,
+                chargeDmgUp: 0
             },
             {
                 dmgUpHosei: 2,
@@ -374,7 +387,8 @@ describe('Damage calculations module', function () {
                 isDoppel: false,
                 isJoutaiIjou: false,
                 discType: DISC_TYPE.ACCELE,
-                blastDmgUp: 0
+                blastDmgUp: 0,
+                chargeDmgUp: 0
             },
             {
                 dmgUpHosei: 1,
@@ -384,11 +398,23 @@ describe('Damage calculations module', function () {
                 isDoppel: false,
                 isJoutaiIjou: false,
                 discType: DISC_TYPE.ACCELE,
-                blastDmgUp: 0
+                blastDmgUp: 0,
+                chargeDmgUp: 0.5
+            },
+            {
+                dmgUpHosei: 1,
+                dmgUpJoutaiHosei: -1,
+                joutaiIjouDmgUpHosei: 0,
+                doppelHosei: 0,
+                isDoppel: false,
+                isJoutaiIjou: false,
+                discType: DISC_TYPE.CHARGE,
+                blastDmgUp: 0,
+                chargeDmgUp: 0.5
             }
         ];
 
-        const expectedOutputs = [1, 1, 1.5, 3, 2, 3, 5, 2, 3, 2.7, 0, 0, 1];
+        const expectedOutputs = [1, 1, 1.5, 3, 2, 3, 5, 2, 3, 2.7, 0, 0, 1, 1.5];
 
         const outputs = inputs.map((input) => targetFuncCaller(input));
 

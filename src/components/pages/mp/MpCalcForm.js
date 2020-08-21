@@ -17,16 +17,21 @@ const MpFormInit = {
     mpUpPa: 0,
     acceleMpUpPa: 0,
     defMpUpPa: 0,
+    mpUpOver100Pa: 0,
     chargeCount: 0,
     acceleBonus: false,
     mirrors: false,
+    mpOver100: false,
     charType: constants.DISC_TYPE.MAGIA,
     discType: constants.DISC_TYPE.ACCELE,
     discSlot: '1',
     acceleMpUpMemoria: [],
     mpUpMemoria: [],
     acceleMpUpConnects: [],
-    mpUpConnects: []
+    mpUpConnects: [],
+    acceleMpUpSkill: [],
+    mpUpSkill: [],
+    mpUpOver100Skill: []
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -74,7 +79,7 @@ const MpCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
             }),
             name: 'acceleMpUpMemoria',
             label: 'Accel MPUP',
-            dropNumber: 10
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
         },
         {
             array: useFieldArray({
@@ -83,7 +88,7 @@ const MpCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
             }),
             name: 'mpUpMemoria',
             label: 'MP獲得量UP',
-            dropNumber: 10
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
         }
     ];
 
@@ -95,7 +100,7 @@ const MpCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
             }),
             name: 'acceleMpUpConnects',
             label: 'Accel MPUP',
-            dropNumber: 10
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
         },
         {
             array: useFieldArray({
@@ -104,7 +109,37 @@ const MpCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
             }),
             name: 'mpUpConnects',
             label: 'MP獲得量UP',
-            dropNumber: 10
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
+        }
+    ];
+
+    const seishinKyoukaFieldArrays = [
+        {
+            array: useFieldArray({
+                control: formMethods.control,
+                name: 'acceleMpUpSkill'
+            }),
+            name: 'acceleMpUpSkill',
+            label: 'Accel MPUP',
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
+        },
+        {
+            array: useFieldArray({
+                control: formMethods.control,
+                name: 'mpUpSkill'
+            }),
+            name: 'mpUpSkill',
+            label: 'MP獲得量UP',
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
+        },
+        {
+            array: useFieldArray({
+                control: formMethods.control,
+                name: 'mpUpOver100Skill'
+            }),
+            name: 'mpUpOver100Skill',
+            label: 'MP100以上時MP獲得量UP',
+            optionValues: Array.from(Array(4), (_, i) => i + 1)
         }
     ];
 
@@ -113,7 +148,7 @@ const MpCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
             <form onSubmit={formMethods.handleSubmit(onSubmit)} autoComplete='off'>
                 <FormSection title='基本情報'>
                     <Grid container>
-                        <Grid item xs={4}>
+                        <Grid item xs={4} md={3}>
                             <SelectInput
                                 name='discType'
                                 label='ディスク種類'
@@ -122,7 +157,7 @@ const MpCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
                                 showErrors
                             />
                         </Grid>
-                        <Grid item xs={4}>
+                        <Grid item xs={4} md={3}>
                             <SelectInput
                                 name='discSlot'
                                 label='ディスク位置'
@@ -131,7 +166,7 @@ const MpCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
                                 showErrors
                             />
                         </Grid>
-                        <Grid item xs={4}>
+                        <Grid item xs={4} md={3}>
                             <SelectInput
                                 name='charType'
                                 label='キャラクタータイプ'
@@ -140,7 +175,7 @@ const MpCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
                                 showErrors
                             />
                         </Grid>
-                        <Grid item xs={4}>
+                        <Grid item xs={4} md={3}>
                             <TextInput
                                 name='chargeCount'
                                 label='チャージ数'
@@ -155,7 +190,7 @@ const MpCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
                                 }}
                             />
                         </Grid>
-                        <Grid item xs={4}>
+                        <Grid item xs={4} md={3}>
                             <CheckboxInput
                                 name='acceleBonus'
                                 label='初手Acceleボーナス'
@@ -164,8 +199,11 @@ const MpCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
                                 }
                             />
                         </Grid>
-                        <Grid item xs={4}>
+                        <Grid item xs={4} md={3}>
                             <CheckboxInput name='mirrors' label='ミラーズ' />
+                        </Grid>
+                        <Grid item xs={4} md={3}>
+                            <CheckboxInput name='mpOver100' label='MP100以上' />
                         </Grid>
                     </Grid>
                 </FormSection>
@@ -176,10 +214,10 @@ const MpCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
                                 <FieldArrayElement key={index} fieldArray={element.array} index={index}>
                                     <SelectInput
                                         name={`${element.name}[${index}].amount`}
-                                        options={Array.from(Array(element.dropNumber), (_, i) => {
+                                        options={Array.from(element.optionValues, (i) => {
                                             return {
-                                                value: (i + 1).toString(),
-                                                text: element.label + constants.ROMAN_NUMERALS[i + 1]
+                                                value: i.toString(),
+                                                text: element.label + ' ' + constants.ROMAN_NUMERALS[i]
                                             };
                                         })}
                                         defaultValue={'1'}
@@ -196,10 +234,34 @@ const MpCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
                                 <FieldArrayElement key={index} fieldArray={element.array} index={index}>
                                     <SelectInput
                                         name={`${element.name}[${index}].amount`}
-                                        options={Array.from(Array(element.dropNumber), (_, i) => {
+                                        options={Array.from(element.optionValues, (i) => {
                                             return {
-                                                value: (i + 1).toString(),
-                                                text: element.label + constants.ROMAN_NUMERALS[i + 1]
+                                                value: i.toString(),
+                                                text: element.label + ' ' + constants.ROMAN_NUMERALS[i]
+                                            };
+                                        })}
+                                        defaultValue={'1'}
+                                    />
+                                </FieldArrayElement>
+                            ))}
+                        </FieldArrayWrapper>
+                    ))}
+                </FormSection>
+                <FormSection
+                    title='精神強化'
+                    collapse
+                    open={seishinKyoukaFieldArrays.some((el) => el.array.fields.length > 0)}
+                >
+                    {seishinKyoukaFieldArrays.map((element, index) => (
+                        <FieldArrayWrapper key={index} name={element.name} label={element.label} fieldArray={element.array}>
+                            {element.array.fields.map((field, index) => (
+                                <FieldArrayElement key={index} fieldArray={element.array} index={index}>
+                                    <SelectInput
+                                        name={`${element.name}[${index}].amount`}
+                                        options={Array.from(element.optionValues, (i) => {
+                                            return {
+                                                value: i.toString(),
+                                                text: element.label + ' ' + constants.ROMAN_NUMERALS[i]
                                             };
                                         })}
                                         defaultValue={'1'}
@@ -236,6 +298,24 @@ const MpCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
                             <TextInput
                                 name='acceleMpUpPa'
                                 label='AccelMPUP倍率'
+                                validationObj={{
+                                    required: true,
+                                    validate: {
+                                        isNumber: (value) => !isNaN(Number(value))
+                                    }
+                                }}
+                                InputProps={{
+                                    endAdornment: <InputAdornment position='end'>%</InputAdornment>
+                                }}
+                                inputProps={{
+                                    maxLength: 6
+                                }}
+                            />
+                        </Grid>
+                        <Grid item xs={4}>
+                            <TextInput
+                                name='mpUpOver100Pa'
+                                label='MP100以上時MP獲得量'
                                 validationObj={{
                                     required: true,
                                     validate: {
