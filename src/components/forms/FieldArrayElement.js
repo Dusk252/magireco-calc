@@ -24,7 +24,7 @@ const FieldArrayElement = ({ index, fieldArray, children }) => {
                 type='button'
                 onClick={() => {
                     fieldArray.remove(index);
-                    handleChange();
+                    setTimeout(handleChange, 0);
                 }}
             >
                 <DeleteIcon />

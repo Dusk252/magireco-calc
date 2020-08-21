@@ -174,16 +174,16 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
             name: 'magiaDmgUpMemoria',
             label: 'マギアダメージUP',
             optionValues: Array.from(Array(10), (_, i) => i + 1)
+        },
+        {
+            array: useFieldArray({
+                control: formMethods.control,
+                name: 'hinshijiAtkUpMemoria'
+            }),
+            name: 'hinshijiAtkUpMemoria',
+            label: '瀕死時攻撃力UP',
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
         }
-        // {
-        //     array: useFieldArray({
-        //         control: formMethods.control,
-        //         name: 'hinshijiAtkUpMemoria'
-        //     }),
-        //     name: 'hinshijiAtkUpMemoria',
-        //     label: '瀕死時攻撃力UP',
-        //     optionValues: Array.from(Array(10), (_, i) => i + 1)
-        // }
     ];
 
     const connectFieldArrays = [
@@ -252,7 +252,7 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
         }
     ];
 
-    const seishinKyoukaArrays = [
+    const seishinKyoukaFieldArrays = [
         {
             array: useFieldArray({
                 control: formMethods.control,
@@ -372,16 +372,16 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
             label: 'ドッペルダメージUP',
             //dropNumber: 5
             optionValues: Array.from(Array(10), (_, i) => i + 1)
+        },
+        {
+            array: useFieldArray({
+                control: formMethods.control,
+                name: 'hinshijiAtkUpSkill'
+            }),
+            name: 'hinshijiAtkUpSkill',
+            label: '瀕死時攻撃力UP',
+            optionValues: Array.from(Array(10), (_, i) => i + 1)
         }
-        // {
-        //     array: useFieldArray({
-        //         control: formMethods.control,
-        //         name: 'hinshijiAtkUpSkill'
-        //     }),
-        //     name: 'hinshijiAtkUpSkill',
-        //     label: '瀕死時攻撃力UP',
-        //     optionValues: Array.from(Array(10), (_, i) => i + 1)
-        // },
         // {
         //     array: useFieldArray({
         //         control: formMethods.control,
@@ -435,6 +435,10 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
             label: 'ドッペルダメージUP倍率'
         }
     ];
+
+    const memoriaFieldArraysLen = memoriaFieldArrays.reduce((sum, el) => sum + el.array.fields.length, 0);
+    const connectFieldArraysLen = connectFieldArrays.reduce((sum, el) => sum + el.array.fields.length, 0);
+    const seishinKyoukaFieldArraysLen = seishinKyoukaFieldArrays.reduce((sum, el) => sum + el.array.fields.length, 0);
 
     return (
         <FormProvider {...formMethods}>
@@ -727,7 +731,7 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
                         </Grid>
                     </Collapse>
                 </FormSection>
-                <FormSection title='メモリア' collapse open={memoriaFieldArrays.some((el) => el.array.fields.length > 0)}>
+                <FormSection title='メモリア' numItems={memoriaFieldArraysLen} collapse open={memoriaFieldArraysLen > 0}>
                     {memoriaFieldArrays.map((element, index) => (
                         <FieldArrayWrapper key={index} name={element.name} label={element.label} fieldArray={element.array}>
                             {element.array.fields.map((field, index) => (
@@ -747,7 +751,7 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
                         </FieldArrayWrapper>
                     ))}
                 </FormSection>
-                <FormSection title='コネクト' collapse open={connectFieldArrays.some((el) => el.array.fields.length > 0)}>
+                <FormSection title='コネクト' numItems={connectFieldArraysLen} collapse open={connectFieldArraysLen > 0}>
                     {connectFieldArrays.map((element, index) => (
                         <FieldArrayWrapper key={index} name={element.name} label={element.label} fieldArray={element.array}>
                             {element.array.fields.map((field, index) => (
@@ -767,13 +771,18 @@ const DmgCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
                         </FieldArrayWrapper>
                     ))}
                 </FormSection>
-                <FormSection title='精神強化' collapse open={seishinKyoukaArrays.some((el) => el.array.fields.length > 0)}>
+                <FormSection
+                    title='精神強化'
+                    numItems={seishinKyoukaFieldArraysLen}
+                    collapse
+                    open={seishinKyoukaFieldArraysLen > 0}
+                >
                     <Box px={2}>
                         <Typography variant='body2'>
                             *BlastダメージUPとCharge後ダメージUPの場合はスキルとアビリティの数字が異なっていますのでご注意してください。
                         </Typography>
                     </Box>
-                    {seishinKyoukaArrays.map((element, index) => (
+                    {seishinKyoukaFieldArrays.map((element, index) => (
                         <FieldArrayWrapper key={index} name={element.name} label={element.label} fieldArray={element.array}>
                             {element.array.fields.map((field, index) => (
                                 <FieldArrayElement key={index} fieldArray={element.array} index={index}>

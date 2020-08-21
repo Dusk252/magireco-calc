@@ -143,6 +143,10 @@ const MpCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
         }
     ];
 
+    const memoriaFieldArraysLen = memoriaFieldArrays.reduce((sum, el) => sum + el.array.fields.length, 0);
+    const connectFieldArraysLen = connectFieldArrays.reduce((sum, el) => sum + el.array.fields.length, 0);
+    const seishinKyoukaFieldArraysLen = seishinKyoukaFieldArrays.reduce((sum, el) => sum + el.array.fields.length, 0);
+
     return (
         <FormProvider {...formMethods}>
             <form onSubmit={formMethods.handleSubmit(onSubmit)} autoComplete='off'>
@@ -207,7 +211,7 @@ const MpCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
                         </Grid>
                     </Grid>
                 </FormSection>
-                <FormSection title='メモリア' collapse open={memoriaFieldArrays.some((el) => el.array.fields.length > 0)}>
+                <FormSection title='メモリア' numItems={memoriaFieldArraysLen} collapse open={memoriaFieldArraysLen > 0}>
                     {memoriaFieldArrays.map((element, index) => (
                         <FieldArrayWrapper key={index} name={element.name} label={element.label} fieldArray={element.array}>
                             {element.array.fields.map((field, index) => (
@@ -227,7 +231,7 @@ const MpCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
                         </FieldArrayWrapper>
                     ))}
                 </FormSection>
-                <FormSection title='コネクト' collapse open={connectFieldArrays.some((el) => el.array.fields.length > 0)}>
+                <FormSection title='コネクト' numItems={connectFieldArraysLen} collapse open={connectFieldArraysLen > 0}>
                     {connectFieldArrays.map((element, index) => (
                         <FieldArrayWrapper key={index} name={element.name} label={element.label} fieldArray={element.array}>
                             {element.array.fields.map((field, index) => (
@@ -249,8 +253,9 @@ const MpCalcForm = ({ index, formState, onFormChange, onSubmit }) => {
                 </FormSection>
                 <FormSection
                     title='精神強化'
+                    numItems={seishinKyoukaFieldArraysLen}
                     collapse
-                    open={seishinKyoukaFieldArrays.some((el) => el.array.fields.length > 0)}
+                    open={seishinKyoukaFieldArraysLen > 0}
                 >
                     {seishinKyoukaFieldArrays.map((element, index) => (
                         <FieldArrayWrapper key={index} name={element.name} label={element.label} fieldArray={element.array}>

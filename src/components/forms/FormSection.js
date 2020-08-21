@@ -8,10 +8,14 @@ const useStyles = makeStyles((theme) => ({
     root: {
         padding: theme.spacing(2),
         margin: theme.spacing(3, 0)
+    },
+    items: {
+        marginBottom: theme.spacing(0),
+        color: theme.palette.primary.main
     }
 }));
 
-const FormSection = ({ title, subtitle, children, collapse = false, open = false }) => {
+const FormSection = ({ title, subtitle, children, collapse = false, open = false, numItems = 0 }) => {
     const classes = useStyles();
     const [isOpen, setOpen] = useState(open);
     return (
@@ -26,13 +30,20 @@ const FormSection = ({ title, subtitle, children, collapse = false, open = false
                     </Box>
                 )}
                 {collapse && (
-                    <IconButton
-                        onClick={() => {
-                            setOpen(!isOpen);
-                        }}
-                    >
-                        {isOpen ? <ExpandLess /> : <ExpandMore />}
-                    </IconButton>
+                    <Box display='flex' alignItems='center'>
+                        <Box pr={2}>
+                            <Typography className={classes.items} variant='body2' component='div'>
+                                {numItems} アイテム
+                            </Typography>
+                        </Box>
+                        <IconButton
+                            onClick={() => {
+                                setOpen(!isOpen);
+                            }}
+                        >
+                            {isOpen ? <ExpandLess /> : <ExpandMore />}
+                        </IconButton>
+                    </Box>
                 )}
             </Box>
             {collapse ? (
@@ -51,7 +62,8 @@ FormSection.propTypes = {
     subtitle: PropTypes.string,
     children: PropTypes.node.isRequired,
     collapse: PropTypes.bool,
-    open: PropTypes.bool
+    open: PropTypes.bool,
+    numItems: PropTypes.number
 };
 
 export default FormSection;

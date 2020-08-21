@@ -30,6 +30,8 @@ const DmgCalcTab = ({ index, tabInfo, onFormChange, onFormSubmit }) => {
             reduceIfExists(data.atkHoseiMemoria, memoriaCalcs.atkUp) +
                 reduceIfExists(data.atkHoseiConnect, connectCalcs.atkUp) +
                 reduceIfExists(data.atkHoseiSkill, seishinKyoukaCalcs.atkUp) +
+                reduceIfExists(data.hinshijiAtkUpMemoria, memoriaCalcs.hinshiAtkUp) +
+                reduceIfExists(data.hinshijiAtkUpSkill, seishinKyoukaCalcs.hinshiAtkUp) +
                 Number(data.atkUpPa) * 0.01
         );
         const defHosei = dmgCalcs.defHosei(

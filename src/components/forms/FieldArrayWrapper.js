@@ -30,7 +30,7 @@ const FieldArrayWrapper = ({ name, label, fieldArray, children }) => {
                     color='primary'
                     onClick={() => {
                         fieldArray.append();
-                        handleChange();
+                        setTimeout(handleChange, 0);
                     }}
                 >
                     Add
