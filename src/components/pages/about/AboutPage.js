@@ -10,14 +10,6 @@ const AboutPage = () => {
                 </Typography>
             </Box>
             <Typography variant='body1' component='div' align='left'>
-                <p>建設中</p>
-            </Typography>
-            <Box my={3} mx={'auto'} pb={2} borderBottom='1px solid rgba(255, 255, 255, 0.3)'>
-                <Typography variant='h4' component='div' align='center'>
-                    About
-                </Typography>
-            </Box>
-            <Typography variant='body1' component='div' align='left'>
                 <p>マギレコ検証派の皆様が苦労して明らかにさせた情報を私的の情報収集と照り合わせて計算機を作ってみました。</p>
                 <p>計算間違いや誤字が見つかったら是非教えてください。</p>
             </Typography>
