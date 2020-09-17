@@ -7,7 +7,7 @@ export default function mpFormReducer(state = [], action) {
                 [action.index]: { ...state[action.index], formState: action.formState }
             });
         case types.ADD_MP_FORM_TAB:
-            return [...state, { title: action.title, formState: null, results: null }];
+            return [...state, { title: action.title, formState: action.formState }];
         case types.REMOVE_MP_FORM_TAB: {
             let newState = Object.assign([], [...state]);
             newState.splice(action.index, 1);

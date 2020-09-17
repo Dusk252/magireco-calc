@@ -19,6 +19,9 @@ import DmgCalcHome from './DmgCalcHome';
 const DmgCalcPage = ({ updateFormTab, addFormTab, removeFormTab, updateFormResults, formTabsState }) => {
     const [currentTab, setCurrentTab] = useState(0);
     const [removingTab, setRemovingTab] = useState(false);
+    const tabsList = formTabsState.map((val, index) => {
+        return { text: val.title, value: index };
+    });
 
     useEffect(() => {
         setRemovingTab(false);
@@ -28,9 +31,9 @@ const DmgCalcPage = ({ updateFormTab, addFormTab, removeFormTab, updateFormResul
         localStorage.setItem(LOCAL_STORAGE_DMG, JSON.stringify(formTabsState));
     }, [formTabsState]);
 
-    const handleAdd = (title) => {
+    const handleAdd = (title, tabToDup) => {
         if (formTabsState.length === 0) setCurrentTab(0);
-        addFormTab(title);
+        addFormTab(title, formTabsState[tabToDup] == null ? null : formTabsState[tabToDup].formState);
     };
     const handleChange = (event, newValue) => {
         setCurrentTab(newValue);
@@ -74,6 +77,7 @@ const DmgCalcPage = ({ updateFormTab, addFormTab, removeFormTab, updateFormResul
                 </Tabs>
                 <TabAddDialog
                     onAddTab={handleAdd}
+                    tabsList={tabsList}
                     render={(style, handleClick) => (
                         <Button className={style} color='secondary' onClick={handleClick}>
                             <AddIcon />

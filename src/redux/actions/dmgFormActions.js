@@ -4,8 +4,8 @@ export function updateDmgFormTab(formState, index) {
     return { type: types.UPDATE_DMG_FORM_STATE, formState, index };
 }
 
-export function addDmgFormTab(title) {
-    return { type: types.ADD_DMG_FORM_TAB, title };
+export function addDmgFormTab(title, formState) {
+    return { type: types.ADD_DMG_FORM_TAB, title, formState };
 }
 
 export function removeDmgFormTab(index) {
