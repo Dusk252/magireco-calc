@@ -3,7 +3,7 @@ import { Container, Paper, Box, Typography, Link, makeStyles } from '@material-u
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        padding: theme.spacing(1.5),
+        padding: theme.spacing(1, 1.5),
         margin: theme.spacing(2, 0)
     },
     item: {
