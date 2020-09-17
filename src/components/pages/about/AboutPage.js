@@ -1,7 +1,20 @@
 import React from 'react';
-import { Container, Box, Typography, Link } from '@material-ui/core';
+import { Container, Paper, Box, Typography, Link, makeStyles } from '@material-ui/core';
+
+const useStyles = makeStyles((theme) => ({
+    root: {
+        padding: theme.spacing(1.5),
+        margin: theme.spacing(2, 0)
+    },
+    item: {
+        fontWeight: 400,
+        marginBottom: theme.spacing(0),
+        color: theme.palette.primary.main
+    }
+}));
 
 const AboutPage = () => {
+    const classes = useStyles();
     return (
         <Container maxWidth='md' style={{ paddingTop: '48px' }}>
             <Box my={3} mx={'auto'} pb={2} borderBottom='1px solid rgba(255, 255, 255, 0.3)'>
@@ -13,6 +26,19 @@ const AboutPage = () => {
                 <p>マギレコ検証派の皆様が苦労して明らかにさせた情報を私的の情報収集と照り合わせて計算機を作ってみました。</p>
                 <p>計算間違いや誤字が見つかったら是非教えてください。</p>
             </Typography>
+
+            <Paper className={classes.root} variant='outlined'>
+                <Box my={0} mx={'auto'} pb={0}>
+                    <Typography className={classes.item} variant='h6' component='div' align='left'>
+                        v0.0.2
+                    </Typography>
+                    <Typography variant='body1' component='div' align='left'>
+                        <ul>
+                            <li>タブ複製機能を追加</li>
+                        </ul>
+                    </Typography>
+                </Box>
+            </Paper>
 
             <Box mt={4} mb={2}>
                 <Typography variant='h5' component='div' align='left' style={{ textDecoration: 'underline' }}>
@@ -56,7 +82,6 @@ const AboutPage = () => {
                     <li>逆算昨日 - 個人的には相当便利になる機能で優先したいポイントです</li>
                     <li>防御時のMP獲得量 - 簡単な計算でそんなに必要ないと思いますがあるに越したことはないという感じかな</li>
                     <li>英語版</li>
-                    <li>タッブコッピ機能</li>
                 </ul>
             </Typography>
 
