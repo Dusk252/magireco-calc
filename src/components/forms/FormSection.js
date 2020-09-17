@@ -9,7 +9,7 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2),
         margin: theme.spacing(3, 0)
     },
-    items: {
+    item: {
         marginBottom: theme.spacing(0),
         color: theme.palette.primary.main
     }
@@ -33,7 +33,7 @@ const FormSection = ({ title, subtitle, children, collapse = false, open = false
                     <Box display='flex' alignItems='center'>
                         {numItems > 0 && (
                             <Box pr={2}>
-                                <Typography className={classes.items} variant='body2' component='div'>
+                                <Typography className={classes.item} variant='body2' component='div'>
                                     {numItems} アイテム
                                 </Typography>
                             </Box>
