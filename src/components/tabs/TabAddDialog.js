@@ -36,20 +36,26 @@ const TabAddDialog = ({ onAddTab, tabsList, render }) => {
 
     const classes = useStyles();
 
+    const resetTabState = () => {
+        setTitle('');
+        setDuplicate(false);
+        setTabToDup('0');
+    };
+
     const handleClickOpen = () => {
         setOpen(true);
     };
 
     const handleCancel = () => {
         setOpen(false);
-        setTitle('');
+        resetTabState();
     };
 
     const handleAdd = (e) => {
         e.preventDefault();
         setOpen(false);
         onAddTab(title, duplicate ? tabToDup : null);
-        setTitle('');
+        resetTabState();
     };
 
     return (
